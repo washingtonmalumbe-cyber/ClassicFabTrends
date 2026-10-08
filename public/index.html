@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Better Life Zambia Limited - Microfinance System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .brand-header { background: #0f3d3e; color: #fff; padding: 20px 0; }
+    .card-custom { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+    /* Print Styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="brand-header mb-4 no-print">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="m-0 font-weight-bold">Better Life Zambia Limited</h3>
+        <small class="text-light">Civil Servant (PMEC 40%) & Collateral Loan Management System</small>
+      </div>
+      <span class="badge bg-success fs-6">System Online</span>
+    </div>
+  </header>
+
+  <div class="container pb-5 no-print">
+    
+    <!-- Row 1: Calculators -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card card-custom p-4 h-100">
+          <h4 class="text-dark mb-3">1. Quick PMEC 40% Affordability Check</h4>
+          <form id="affordabilityForm">
+            <div class="mb-3">
+              <label class="form-label">Net Monthly Pay (ZMW)</label>
+              <input type="number" class="form-control" id="netPay" placeholder="e.g. 12500" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Existing Deductions (ZMW)</label>
+              <input type="number" class="form-control" id="existingDeductions" value="0">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Proposed Installment (ZMW)</label>
+              <input type="number" class="form-control" id="proposedInstallment" placeholder="e.g. 1500" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold" style="background:#0f3d3e;">Check Affordability</button>
+          </form>
+          <div id="affordabilityResult" class="mt-3 d-none"></div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card card-custom p-4 h-100">
+          <h4 class="text-dark mb-3">2. Quick Repayment Calculator</h4>
+          <form id="scheduleForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Principal (ZMW)</label>
+                <input type="number" class="form-control" id="loanPrincipal" placeholder="e.g. 10000" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Monthly Interest (%)</label>
+                <input type="number" step="0.1" class="form-control" id="interestRate" value="10" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tenure (Months)</label>
+              <input type="number" class="form-control" id="tenureMonths" placeholder="e.g. 6" required>
+            </div>
+            <button type="submit" class="btn btn-secondary w-100 fw-bold">Calculate Schedule</button>
+          </form>
+          <div id="scheduleResult" class="mt-3 d-none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Borrower Management -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-5">
+        <div class="card card-custom p-4">
+          <h4 class="text-dark mb-3">3. Register Borrower</h4>
+          <form id="borrowerForm">
+            <div class="mb-3">
+              <label class="form-label">Borrower Type</label>
+              <select class="form-select" id="borrowerType" onchange="toggleBorrowerFields()" required>
+                <option value="CIVIL_SERVANT">Civil Servant (PMEC Payroll)</option>
+                <option value="COLLATERAL">Private / Collateral Client</option>
+              </select>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <input type="text" class="form-control" id="firstName" placeholder="First Name" required>
+              </div>
+              <div class="col-6 mb-3">
+                <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="nrcNumber" placeholder="NRC Number (e.g. 123456/11/1)" required>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="phoneNumber" placeholder="Phone Number (+260...)" required>
+            </div>
+
+            <div id="civilServantFields">
+              <div class="mb-3">
+                <input type="text" class="form-control" id="manNumber" placeholder="PMEC MAN Number (e.g. 88392)">
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" id="employer" placeholder="Ministry / Dept (e.g. Education)">
+              </div>
+              <div class="mb-3">
+                <input type="number" class="form-control" id="netMonthlyPay" placeholder="Net Monthly Pay (ZMW)">
+              </div>
+            </div>
+
+            <div id="collateralFields" class="d-none">
+              <div class="mb-3">
+                <input type="text" class="form-control" id="collateralDescription" placeholder="Collateral Item (e.g. Toyota Vitz)">
+              </div>
+              <div class="mb-3">
+                <input type="number" class="form-control" id="collateralValue" placeholder="Estimated Value (ZMW)">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 fw-bold">Save Borrower</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="card card-custom p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-dark m-0">Registered Borrowers</h4>
+            <input type="text" class="form-control form-control-sm w-50" id="borrowerSearch" placeholder="🔍 Search Name, NRC, MAN..." oninput="filterBorrowers()">
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover table-sm">
+              <thead class="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Name</th>
+                  <th>NRC</th>
+                  <th>MAN / Asset</th>
+                </tr>
+              </thead>
+              <tbody id="borrowersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Loan Issue & Active Loans -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-5">
+        <div class="card card-custom p-4">
+          <h4 class="text-dark mb-3">4. Issue New Loan</h4>
+          <form id="loanForm">
+            <div class="mb-3">
+              <label class="form-label">Select Borrower</label>
+              <select class="form-select" id="applyBorrowerId" required>
+                <option value="">-- Choose Borrower --</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Principal Amount (ZMW)</label>
+              <input type="number" class="form-control" id="applyPrincipal" placeholder="e.g. 5000" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label">Interest / Mo (%)</label>
+                <input type="number" step="0.1" class="form-control" id="applyInterest" value="10" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Tenure (Months)</label>
+                <input type="number" class="form-control" id="applyTenure" value="6" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Existing Other Deductions (ZMW)</label>
+              <input type="number" class="form-control" id="applyDeductions" value="0">
+            </div>
+            <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">Process & Issue Loan</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="card card-custom p-4 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-dark m-0">Loans Directory</h4>
+            <div class="d-flex gap-2">
+              <select class="form-select form-select-sm" id="loanStatusFilter" onchange="filterLoans()">
+                <option value="ALL">All Statuses</option>
+                <option value="APPROVED">Approved</option>
+                <option value="REJECTED">Rejected</option>
+                <option value="CLOSED">Closed</option>
+              </select>
+              <input type="text" class="form-control form-control-sm" id="loanSearch" placeholder="🔍 Search Loan ID, Borrower..." oninput="filterLoans()">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover table-sm">
+              <thead class="table-dark">
+                <tr>
+                  <th>Loan ID</th>
+                  <th>Borrower</th>
+                  <th>Monthly Due</th>
+                  <th>Balance</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="loansTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: Repayments & Collections -->
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div class="card card-custom p-4">
+          <h4 class="text-dark mb-3">5. Record Repayment</h4>
+          <form id="repaymentForm">
+            <div class="mb-3">
+              <label class="form-label">Select Active Loan</label>
+              <select class="form-select" id="payLoanId" required>
+                <option value="">-- Select Loan --</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Amount Paid (ZMW)</label>
+              <input type="number" step="0.01" class="form-control" id="payAmount" placeholder="e.g. 1500" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Payment Method</label>
+              <select class="form-select" id="payMethod">
+                <option value="PMEC_DEDUCTION">PMEC Direct Payroll Deduction</option>
+                <option value="BANK_TRANSFER">Bank Transfer / Direct Deposit</option>
+                <option value="MOBILE_MONEY">Airtel Money / MTN MoMo</option>
+                <option value="CASH">Cash Deposit</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="payRef" placeholder="Ref Number / Receipt No.">
+            </div>
+            <button type="submit" class="btn btn-info w-100 fw-bold text-white">Record Payment</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="card card-custom p-4 h-100">
+          <h4 class="text-dark mb-3">Collections Ledger</h4>
+          <div class="table-responsive">
+            <table class="table table-hover table-sm">
+              <thead class="table-dark">
+                <tr>
+                  <th>Receipt ID</th>
+                  <th>Loan ID</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Remaining</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="repaymentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Printable Container (Hidden from normal UI view) -->
+  <div id="printableArea" class="d-none"></div>
+
+  <script>
+    let rawBorrowers = [];
+    let rawLoans = [];
+    let rawRepayments = [];
+
+    function toggleBorrowerFields() {
+      const type = document.getElementById('borrowerType').value;
+      if (type === 'CIVIL_SERVANT') {
+        document.getElementById('civilServantFields').classList.remove('d-none');
+        document.getElementById('collateralFields').classList.add('d-none');
+      } else {
+        document.getElementById('civilServantFields').classList.add('d-none');
+        document.getElementById('collateralFields').classList.remove('d-none');
+      }
+    }
+
+    async function loadBorrowers() {
+      const res = await fetch('/api/v1/borrowers');
+      const data = await res.json();
+      if (data.success) {
+        rawBorrowers = data.borrowers;
+        renderBorrowersTable(rawBorrowers);
+        
+        const select = document.getElementById('applyBorrowerId');
+        select.innerHTML = '<option value="">-- Choose Borrower --</option>';
+        rawBorrowers.forEach(b => {
+          select.innerHTML += `<option value="${b.id}">${b.firstName} ${b.lastName} (${b.borrowerType})</option>`;
+        });
+      }
+    }
+
+    function renderBorrowersTable(borrowers) {
+      const tbody = document.getElementById('borrowersTableBody');
+      tbody.innerHTML = '';
+      if (borrowers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No matching borrowers found.</td></tr>`;
+        return;
+      }
+      borrowers.forEach(b => {
+        const detail = b.borrowerType === 'CIVIL_SERVANT' ? `MAN: ${b.manNumber}` : `Asset: ${b.collateralDescription}`;
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${b.id}</strong></td>
+            <td><span class="badge ${b.borrowerType === 'CIVIL_SERVANT' ? 'bg-primary' : 'bg-warning text-dark'}">${b.borrowerType}</span></td>
+            <td>${b.firstName} ${b.lastName}</td>
+            <td>${b.nrcNumber}</td>
+            <td><small>${detail}</small></td>
+          </tr>
+        `;
+      });
+    }
+
+    function filterBorrowers() {
+      const q = document.getElementById('borrowerSearch').value.toLowerCase();
+      const filtered = rawBorrowers.filter(b => 
+        `${b.firstName} ${b.lastName}`.toLowerCase().includes(q) ||
+        b.nrcNumber.toLowerCase().includes(q) ||
+        b.manNumber.toLowerCase().includes(q)
+      );
+      renderBorrowersTable(filtered);
+    }
+
+    async function loadLoans() {
+      const res = await fetch('/api/v1/loans');
+      const data = await res.json();
+      if (data.success) {
+        rawLoans = data.loans;
+        renderLoansTable(rawLoans);
+
+        const paySelect = document.getElementById('payLoanId');
+        paySelect.innerHTML = '<option value="">-- Select Loan --</option>';
+        rawLoans.filter(l => l.status === 'APPROVED').forEach(l => {
+          paySelect.innerHTML += `<option value="${l.id}">${l.id} - ${l.borrowerName} (Bal: ZMW ${l.outstandingBalance})</option>`;
+        });
+      }
+    }
+
+    function renderLoansTable(loans) {
+      const tbody = document.getElementById('loansTableBody');
+      tbody.innerHTML = '';
+      if (loans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No matching loans found.</td></tr>`;
+        return;
+      }
+      loans.forEach(l => {
+        let statusBadge = '<span class="badge bg-success">APPROVED</span>';
+        if (l.status === 'REJECTED') statusBadge = '<span class="badge bg-danger">REJECTED</span>';
+        if (l.status === 'CLOSED') statusBadge = '<span class="badge bg-secondary">CLOSED</span>';
+
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${l.id}</strong></td>
+            <td>${l.borrowerName}</td>
+            <td>ZMW ${l.monthlyInstallment}</td>
+            <td><strong>ZMW ${l.outstandingBalance}</strong></td>
+            <td>${statusBadge}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-dark" onclick="printStatement('${l.id}')">📄 Statement</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function filterLoans() {
+      const q = document.getElementById('loanSearch').value.toLowerCase();
+      const status = document.getElementById('loanStatusFilter').value;
+
+      const filtered = rawLoans.filter(l => {
+        const matchesQuery = l.id.toLowerCase().includes(q) || l.borrowerName.toLowerCase().includes(q);
+        const matchesStatus = status === 'ALL' || l.status === status;
+        return matchesQuery && matchesStatus;
+      });
+
+      renderLoansTable(filtered);
+    }
+
+    async function loadRepayments() {
+      const res = await fetch('/api/v1/repayments');
+      const data = await res.json();
+      if (data.success) {
+        rawRepayments = data.repayments;
+        const tbody = document.getElementById('repaymentsTableBody');
+        tbody.innerHTML = '';
+
+        if (rawRepayments.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No repayments logged yet.</td></tr>`;
+          return;
+        }
+
+        rawRepayments.forEach(r => {
+          tbody.innerHTML += `
+            <tr>
+              <td><strong>${r.id}</strong></td>
+              <td>${r.loanId}</td>
+              <td class="text-success fw-bold">ZMW ${r.amountPaid}</td>
+              <td><small>${r.paymentMethod}</small></td>
+              <td>ZMW ${r.remainingBalance}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" onclick="printReceipt('${r.id}')">🧾 Receipt</button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+    }
+
+    // Print Payment Receipt
+    function printReceipt(receiptId) {
+      const r = rawRepayments.find(item => item.id === receiptId);
+      if (!r) return alert("Receipt not found.");
+
+      const container = document.getElementById('printableArea');
+      container.className = 'd-block';
+      container.innerHTML = `
+        <div class="border p-4 rounded text-center">
+          <h2>Better Life Zambia Limited</h2>
+          <p class="text-muted">Official Payment Receipt</p>
+          <hr>
+          <div class="row text-start my-3">
+            <div class="col-6"><strong>Receipt ID:</strong> ${r.id}</div>
+            <div class="col-6 text-end"><strong>Date:</strong> ${new Date(r.paidAt).toLocaleDateString()}</div>
+            <div class="col-6 mt-2"><strong>Loan ID:</strong> ${r.loanId}</div>
+            <div class="col-6 text-end mt-2"><strong>Borrower:</strong> ${r.borrowerName}</div>
+          </div>
+          <table class="table table-bordered my-3">
+            <thead class="table-light">
+              <tr><th>Payment Method</th><th>Reference No.</th><th>Amount Paid</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${r.paymentMethod}</td>
+                <td>${r.referenceNumber}</td>
+                <td class="fw-bold text-success">ZMW ${r.amountPaid.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-end fw-bold">Remaining Loan Balance: ZMW ${r.remainingBalance.toFixed(2)}</p>
+          <hr>
+          <small class="text-muted">Thank you for choosing Better Life Zambia Limited.</small>
+        </div>
+      `;
+
+      window.print();
+      container.className = 'd-none';
+    }
+
+    // Print Loan Statement
+    function printStatement(loanId) {
+      const loan = rawLoans.find(item => item.id === loanId);
+      if (!loan) return alert("Loan not found.");
+
+      const loanPayments = rawRepayments.filter(r => r.loanId === loanId);
+
+      const container = document.getElementById('printableArea');
+      container.className = 'd-block';
+      container.innerHTML = `
+        <div class="border p-4 rounded">
+          <div class="d-flex justify-content-between align-items-center">
+            <h3>Better Life Zambia Limited</h3>
+            <span class="badge bg-secondary">${loan.status}</span>
+          </div>
+          <p class="text-muted mb-4">Official Client Loan Statement</p>
+          <div class="row mb-3">
+            <div class="col-6"><strong>Borrower Name:</strong> ${loan.borrowerName}</div>
+            <div class="col-6 text-end"><strong>Loan Reference:</strong> ${loan.id}</div>
+            <div class="col-6"><strong>Principal Amount:</strong> ZMW ${loan.principal.toFixed(2)}</div>
+            <div class="col-6 text-end"><strong>Total Payable:</strong> ZMW ${loan.totalRepayment.toFixed(2)}</div>
+            <div class="col-6"><strong>Monthly Installment:</strong> ZMW ${loan.monthlyInstallment.toFixed(2)}</div>
+            <div class="col-6 text-end"><strong>Current Balance:</strong> ZMW ${loan.outstandingBalance.toFixed(2)}</div>
+          </div>
+          <h5>Payment History</h5>
+          <table class="table table-striped table-sm mt-2">
+            <thead>
+              <tr><th>Receipt ID</th><th>Date</th><th>Method</th><th>Amount Paid</th><th>Balance After</th></tr>
+            </thead>
+            <tbody>
+              ${loanPayments.length === 0 
+                ? '<tr><td colspan="5" class="text-center text-muted">No payments logged yet.</td></tr>' 
+                : loanPayments.map(p => `
+                  <tr>
+                    <td>${p.id}</td>
+                    <td>${new Date(p.paidAt).toLocaleDateString()}</td>
+                    <td>${p.paymentMethod}</td>
+                    <td class="text-success fw-bold">ZMW ${p.amountPaid.toFixed(2)}</td>
+                    <td>ZMW ${p.remainingBalance.toFixed(2)}</td>
+                  </tr>
+                `).join('')
+              }
+            </tbody>
+          </table>
+          <hr>
+          <small class="text-muted">Generated by Better Life Zambia Limited Microfinance System.</small>
+        </div>
+      `;
+
+      window.print();
+      container.className = 'd-none';
+    }
+
+    // Register Borrower
+    document.getElementById('borrowerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        borrowerType: document.getElementById('borrowerType').value,
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        nrcNumber: document.getElementById('nrcNumber').value,
+        phoneNumber: document.getElementById('phoneNumber').value,
+        manNumber: document.getElementById('manNumber').value,
+        employer: document.getElementById('employer').value,
+        netMonthlyPay: document.getElementById('netMonthlyPay').value,
+        collateralDescription: document.getElementById('collateralDescription').value,
+        collateralValue: document.getElementById('collateralValue').value
+      };
+
+      const res = await fetch('/api/v1/borrowers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Borrower Registered!');
+        document.getElementById('borrowerForm').reset();
+        toggleBorrowerFields();
+        loadBorrowers();
+      }
+    });
+
+    // Issue Loan
+    document.getElementById('loanForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        borrowerId: document.getElementById('applyBorrowerId').value,
+        principal: document.getElementById('applyPrincipal').value,
+        interestRatePerMonth: document.getElementById('applyInterest').value,
+        tenureMonths: document.getElementById('applyTenure').value,
+        existingDeductions: document.getElementById('applyDeductions').value
+      };
+
+      const res = await fetch('/api/v1/loans/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Loan Processed: ${data.loan.status}`);
+        document.getElementById('loanForm').reset();
+        loadLoans();
+      } else {
+        alert(data.message);
+      }
+    });
+
+    // Record Repayment
+    document.getElementById('repaymentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        loanId: document.getElementById('payLoanId').value,
+        amountPaid: document.getElementById('payAmount').value,
+        paymentMethod: document.getElementById('payMethod').value,
+        referenceNumber: document.getElementById('payRef').value
+      };
+
+      const res = await fetch('/api/v1/repayments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Payment Recorded! Remaining Balance: ZMW ${data.repayment.remainingBalance}`);
+        document.getElementById('repaymentForm').reset();
+        loadLoans();
+        loadRepayments();
+      } else {
+        alert(data.message);
+      }
+    });
+
+    // Quick Affordability
+    document.getElementById('affordabilityForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const resBox = document.getElementById('affordabilityResult');
+      const res = await fetch('/api/v1/loans/check-affordability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          netMonthlyPay: document.getElementById('netPay').value,
+          existingDeductions: document.getElementById('existingDeductions').value,
+          proposedInstallment: document.getElementById('proposedInstallment').value
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const aff = data.affordability;
+        resBox.className = 'mt-3 alert ' + (aff.isAffordable ? 'alert-success' : 'alert-danger');
+        resBox.innerHTML = `<strong>Status:</strong> ${aff.isAffordable ? 'APPROVED' : 'REJECTED'}<br><small>Max 40% Cap: ZMW ${aff.maxAllowableDeductions}</small>`;
+      }
+    });
+
+    // Quick Schedule
+    document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const resBox = document.getElementById('scheduleResult');
+      const res = await fetch('/api/v1/loans/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          principal: document.getElementById('loanPrincipal').value,
+          interestRatePerMonth: document.getElementById('interestRate').value,
+          tenureMonths: document.getElementById('tenureMonths').value
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const calc = data.loanCalculation;
+        resBox.className = 'mt-3 alert alert-info';
+        resBox.innerHTML = `<strong>Monthly Installment:</strong> ZMW ${calc.monthlyInstallment}<br><strong>Total Payable:</strong> ZMW ${calc.totalRepayment}`;
+      }
+    });
+
+    // Initial Loads
+    loadBorrowers();
+    loadLoans();
+    loadRepayments();
+  </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CapitalFinc - Zambia Money Lending System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .brand-header { background: #0f3d3e; color: #fff; padding: 20px 0; }
+    .card-custom { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .badge-pass { background-color: #198754; }
+    .badge-fail { background-color: #dc3545; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="brand-header mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="m-0 font-weight-bold">🇿🇲 CapitalFinc Microfinance</h3>
+        <small class="text-light">Civil Servant Payroll (PMEC 40% Rule) & Collateral System</small>
+      </div>
+      <span class="badge bg-success fs-6">System Status: Online</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="row g-4">
+      
+      <!-- Calculator Column -->
+      <div class="col-md-6">
+        <div class="card card-custom p-4">
+          <h4 class="text-dark mb-3">1. PMEC 40% Affordability Check</h4>
+          <form id="affordabilityForm">
+            <div class="mb-3">
+              <label class="form-label">Net Monthly Pay (ZMW)</label>
+              <input type="number" class="form-control" id="netPay" placeholder="e.g. 12500" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Existing Monthly Deductions (ZMW)</label>
+              <input type="number" class="form-control" id="existingDeductions" placeholder="e.g. 2000" value="0">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Proposed New Monthly Installment (ZMW)</label>
+              <input type="number" class="form-control" id="proposedInstallment" placeholder="e.g. 1500" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-bold" style="background:#0f3d3e;">Test Affordability</button>
+          </form>
+
+          <div id="affordabilityResult" class="mt-4 d-none">
+            <!-- Results populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Calculator Column -->
+      <div class="col-md-6">
+        <div class="card card-custom p-4">
+          <h4 class="text-dark mb-3">2. Loan Repayment Calculator</h4>
+          <form id="scheduleForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Principal Amount (ZMW)</label>
+                <input type="number" class="form-control" id="loanPrincipal" placeholder="e.g. 10000" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Monthly Interest Rate (%)</label>
+                <input type="number" step="0.1" class="form-control" id="interestRate" value="10" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tenure (Months)</label>
+              <input type="number" class="form-control" id="tenureMonths" placeholder="e.g. 6" required>
+            </div>
+            <button type="submit" class="btn btn-secondary w-100 fw-bold">Generate Schedule</button>
+          </form>
+
+          <div id="scheduleResult" class="mt-4 d-none">
+            <!-- Schedule table populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Handle Affordability Calculation
+    document.getElementById('affordabilityForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const resBox = document.getElementById('affordabilityResult');
+      
+      const payload = {
+        netMonthlyPay: document.getElementById('netPay').value,
+        existingDeductions: document.getElementById('existingDeductions').value,
+        proposedInstallment: document.getElementById('proposedInstallment').value
+      };
+
+      try {
+        const res = await fetch('/api/v1/loans/check-affordability', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          const aff = data.affordability;
+          const statusBadge = aff.isAffordable 
+            ? '<span class="badge badge-pass p-2 fs-6">APPROVED (Within 40% Cap)</span>'
+            : '<span class="badge badge-fail p-2 fs-6">REJECTED (Exceeds 40% Cap)</span>';
+
+          resBox.className = 'mt-4 alert ' + (aff.isAffordable ? 'alert-success' : 'alert-danger');
+          resBox.innerHTML = `
+            <h5>Status: ${statusBadge}</h5>
+            <ul class="mb-0 mt-2">
+              <li><strong>Max Allowable Deductions (40%):</strong> ZMW ${aff.maxAllowableDeductions}</li>
+              <li><strong>Total Deductions After Loan:</strong> ZMW ${aff.totalFutureDeductions}</li>
+              <li><strong>Remaining Borrowing Capacity:</strong> ZMW ${aff.availableCap}</li>
+            </ul>
+          `;
+        }
+      } catch (err) {
+        alert('Error testing affordability.');
+      }
+    });
+
+    // Handle Schedule Calculation
+    document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const resBox = document.getElementById('scheduleResult');
+
+      const payload = {
+        principal: document.getElementById('loanPrincipal').value,
+        interestRatePerMonth: document.getElementById('interestRate').value,
+        tenureMonths: document.getElementById('tenureMonths').value
+      };
+
+      try {
+        const res = await fetch('/api/v1/loans/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          const calc = data.loanCalculation;
+          let tableHtml = `
+            <div class="alert alert-info">
+              <div><strong>Total Interest:</strong> ZMW ${calc.totalInterest}</div>
+              <div><strong>Total Repayment:</strong> ZMW ${calc.totalRepayment}</div>
+              <div><strong>Monthly Installment:</strong> ZMW ${calc.monthlyInstallment}</div>
+            </div>
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Due Date</th>
+                  <th>Principal</th>
+                  <th>Interest</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          calc.schedule.forEach(item => {
+            tableHtml += `
+              <tr>
+                <td>${item.installmentNumber}</td>
+                <td>${item.dueDate}</td>
+                <td>${item.principalDue}</td>
+                <td>${item.interestDue}</td>
+                <td>${item.totalInstallment}</td>
+              </tr>
+            `;
+          });
+
+          tableHtml += `</tbody></table>`;
+          resBox.className = 'mt-4 d-block';
+          resBox.innerHTML = tableHtml;
+        }
+      } catch (err) {
+        alert('Error generating schedule.');
+      }
+    });
+  </script>
+</body>
+</html>
