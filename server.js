@@ -1,181 +1,207 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-const bcrypt = require('bcryptjs');
-const fs = require('fs');
-const path = require('path');
+const sqlite3 = require('sqlite3-offline-next').verbose();
 const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Enable CORS and JSON Parsing
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ensure data directory exists for CSV exports
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-const csvFilePath = path.join(dataDir, 'customers.csv');
-
-// Initialize CSV header if file doesn't exist
-if (!fs.existsSync(csvFilePath)) {
-  const headers = 'ID,Full Name,NRC/ID,Phone,Gross Salary,Net Salary,Affordability Limit,Status,Created At\n';
-  fs.writeFileSync(csvFilePath, headers, 'utf8');
-}
-
-// Database Connection
-const db = new sqlite3.Database('./database.sqlite', (err) => {
-  if (err) {
-    console.error('Error opening database:', err.message);
-  } else {
-    console.log('Connected to SQLite database.');
-  }
-});
-
-// Database Initialization & Automatic Admin Seeding
-db.serialize(() => {
-  // Users Table
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE,
-    password_hash TEXT,
-    role TEXT
-  )`);
-
-  // Customers Table
-  db.run(`CREATE TABLE IF NOT EXISTS customers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    full_name TEXT NOT NULL,
-    nrc TEXT UNIQUE NOT NULL,
-    phone TEXT,
-    gross_salary REAL,
-    net_salary REAL,
-    affordability_limit REAL,
-    status TEXT DEFAULT 'PENDING',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  // Seed Default Admin User if missing (username: admin, password: admin123)
-  const defaultAdminUser = 'admin';
-  const defaultAdminPass = 'admin123';
-  const hash = bcrypt.hashSync(defaultAdminPass, 10);
-
-  db.run(
-    `INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, 'ADMIN')`,
-    [defaultAdminUser, hash],
-    (err) => {
-      if (err) console.error('Error seeding admin user:', err.message);
-      else console.log('Admin account ready (admin / admin123).');
-    }
-  );
-});
-
-// Non-blocking CSV logger
-function appendCustomerToCSV(customer) {
-  setImmediate(() => {
-    const row = `"${customer.id}","${customer.full_name}","${customer.nrc}","${customer.phone}","${customer.gross_salary}","${customer.net_salary}","${customer.affordability_limit}","${customer.status}","${new Date().toISOString()}"\n`;
-    fs.appendFile(csvFilePath, row, 'utf8', (err) => {
-      if (err) console.error('Failed to append customer to CSV:', err);
-    });
-  });
-}
-
-// --- API ENDPOINTS ---
-
-// 1. Admin Login Verification
-app.post('/api/admin/verify-passcode', (req, res) => {
-  const { username, passcode } = req.body;
-
-  if (!username || !passcode) {
-    return res.status(400).json({ authenticated: false, message: 'Username and passcode are required.' });
-  }
-
-  db.get(`SELECT * FROM users WHERE username = ? AND role = 'ADMIN'`, [username], (err, user) => {
+// Database File Setup
+const dbPath = path.join(__dirname, 'database.sqlite');
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
-      return res.status(500).json({ authenticated: false, message: 'Database query error.' });
-    }
-    if (!user) {
-      return res.status(401).json({ authenticated: false, message: 'Invalid administrative credentials.' });
-    }
-
-    const isValid = bcrypt.compareSync(passcode, user.password_hash);
-    if (isValid) {
-      return res.json({ authenticated: true, token: 'session_token_' + user.id, username: user.username });
+        console.error('Error connecting to database:', err.message);
     } else {
-      return res.status(401).json({ authenticated: false, message: 'Invalid administrative credentials.' });
+        console.log('Connected to SQLite database via sqlite3-offline-next.');
     }
-  });
 });
 
-// 2. Borrower Registration & Affordability Assessment
-app.post('/api/customers/register', (req, res) => {
-  const { full_name, nrc, phone, gross_salary, net_salary } = req.body;
+// Initialize Database Tables
+db.serialize(() => {
+    // Users Table
+    db.run(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            full_name TEXT,
+            email TEXT UNIQUE,
+            phone TEXT,
+            password TEXT,
+            role TEXT DEFAULT 'client',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
 
-  if (!full_name || !nrc || !gross_salary || !net_salary) {
-    return res.status(400).json({ error: 'Missing required customer details.' });
-  }
+    // Loans Table
+    db.run(`
+        CREATE TABLE IF NOT EXISTS loans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            amount REAL,
+            duration INTEGER,
+            interest_rate REAL,
+            status TEXT DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    `);
 
-  // Calculate 40% Affordability Cap according to microfinance guidance
-  const affordability_limit = parseFloat(net_salary) * 0.40;
+    // Repayments Table
+    db.run(`
+        CREATE TABLE IF NOT EXISTS repayments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            loan_id INTEGER,
+            amount_paid REAL,
+            payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (loan_id) REFERENCES loans(id)
+        )
+    `);
 
-  const sql = `INSERT INTO customers (full_name, nrc, phone, gross_salary, net_salary, affordability_limit) VALUES (?, ?, ?, ?, ?, ?)`;
-  const params = [full_name, nrc, phone, gross_salary, net_salary, affordability_limit];
-
-  db.run(sql, function (err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-
-    const newCustomer = {
-      id: this.lastID,
-      full_name,
-      nrc,
-      phone,
-      gross_salary,
-      net_salary,
-      affordability_limit,
-      status: 'PENDING'
-    };
-
-    // Asynchronously log to CSV without blocking main HTTP response
-    appendCustomerToCSV(newCustomer);
-
-    res.json({ message: 'Customer registered successfully', customer: newCustomer });
-  });
-});
-
-// 3. Export Customer CSV / Excel Download
-app.get('/api/admin/export-customers-csv', (req, res) => {
-  if (fs.existsSync(csvFilePath)) {
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="better_life_customers.csv"');
-    return res.sendFile(csvFilePath);
-  }
-  res.status(404).json({ error: 'CSV data log file not found.' });
-});
-
-// 4. Bank of Zambia (BOZ) Prudential Return Export Endpoint
-app.get('/api/admin/regulatory/boz-return', (req, res) => {
-  db.all(`SELECT * FROM customers`, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-
-    let bozCsv = 'Customer ID,Full Name,NRC,Net Salary,Affordability Cap,Status,Registration Date\n';
-    rows.forEach((r) => {
-      bozCsv += `"${r.id}","${r.full_name}","${r.nrc}","${r.net_salary}","${r.affordability_limit}","${r.status}","${r.created_at}"\n`;
+    // Seed Default Admin User if empty
+    db.get("SELECT * FROM users WHERE email = 'admin@classicfabtrends.com'", (err, row) => {
+        if (!row) {
+            db.run(`
+                INSERT INTO users (full_name, email, phone, password, role)
+                VALUES ('System Admin', 'admin@classicfabtrends.com', '0970000000', 'admin123', 'admin')
+            `);
+            console.log('Default admin account created.');
+        }
     });
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="BOZ_Prudential_Return.csv"');
-    res.send(bozCsv);
-  });
 });
 
-// Start Server
+// ==========================================
+// API ROUTES
+// ==========================================
+
+// Health Check Route for Render
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'Backend service is running smoothly.' });
+});
+
+// Register User
+app.post('/api/register', (req, res) => {
+    const { full_name, email, phone, password } = req.body;
+    
+    if (!full_name || !email || !password) {
+        return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
+    }
+
+    const query = `INSERT INTO users (full_name, email, phone, password) VALUES (?, ?, ?, ?)`;
+    db.run(query, [full_name, email, phone, password], function(err) {
+        if (err) {
+            if (err.message.includes('UNIQUE')) {
+                return res.status(400).json({ success: false, message: 'Email address already registered.' });
+            }
+            return res.status(500).json({ success: false, message: 'Database error occurred.' });
+        }
+        res.json({ success: true, userId: this.lastID, message: 'Registration successful!' });
+    });
+});
+
+// User Login
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+
+    const query = `SELECT id, full_name, email, phone, role FROM users WHERE email = ? AND password = ?`;
+    db.get(query, [email, password], (err, user) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Database error.' });
+        }
+        if (user) {
+            res.json({ success: true, user, message: 'Login successful!' });
+        } else {
+            res.status(401).json({ success: false, message: 'Invalid email or password.' });
+        }
+    });
+});
+
+// Submit Loan Application
+app.post('/api/loans/apply', (req, res) => {
+    const { user_id, amount, duration, interest_rate } = req.body;
+
+    if (!user_id || !amount || !duration) {
+        return res.status(400).json({ success: false, message: 'Missing loan application details.' });
+    }
+
+    const query = `INSERT INTO loans (user_id, amount, duration, interest_rate) VALUES (?, ?, ?, ?)`;
+    db.run(query, [user_id, amount, duration, interest_rate || 10], function(err) {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Failed to record loan application.' });
+        }
+        res.json({ success: true, loanId: this.lastID, message: 'Loan application submitted successfully.' });
+    });
+});
+
+// Get User Loans
+app.get('/api/loans/user/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const query = `SELECT * FROM loans WHERE user_id = ? ORDER BY created_at DESC`;
+
+    db.all(query, [userId], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Error retrieving user loans.' });
+        }
+        res.json({ success: true, loans: rows });
+    });
+});
+
+// Get All Loans (Admin)
+app.get('/api/admin/loans', (req, res) => {
+    const query = `
+        SELECT loans.*, users.full_name, users.email, users.phone 
+        FROM loans 
+        JOIN users ON loans.user_id = users.id 
+        ORDER BY loans.created_at DESC
+    `;
+
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Error retrieving all loans.' });
+        }
+        res.json({ success: true, loans: rows });
+    });
+});
+
+// Update Loan Status (Approve/Reject)
+app.post('/api/admin/loans/status', (req, res) => {
+    const { loan_id, status } = req.body;
+
+    const query = `UPDATE loans SET status = ? WHERE id = ?`;
+    db.run(query, [status, loan_id], function(err) {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Failed to update loan status.' });
+        }
+        res.json({ success: true, message: `Loan status updated to ${status}.` });
+    });
+});
+
+// Record Repayment
+app.post('/api/repayments/pay', (req, res) => {
+    const { loan_id, amount_paid } = req.body;
+
+    const query = `INSERT INTO repayments (loan_id, amount_paid) VALUES (?, ?)`;
+    db.run(query, [loan_id, amount_paid], function(err) {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Error saving repayment record.' });
+        }
+        res.json({ success: true, repaymentId: this.lastID, message: 'Payment recorded successfully.' });
+    });
+});
+
+// Catch-All Route to serve frontend index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Start Server Listener
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
