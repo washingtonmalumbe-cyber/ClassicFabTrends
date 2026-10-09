@@ -1,207 +1,209 @@
 const express = require('express');
 const sqlite3 = require('sqlite3-offline-next').verbose();
-const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
+const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Enable CORS and JSON Parsing
+// Middleware configuration
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database File Setup
-const dbPath = path.join(__dirname, 'database.sqlite');
+// Database setup (using sqlite3-offline-next)
+const dbPath = path.resolve(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error connecting to database:', err.message);
-    } else {
-        console.log('Connected to SQLite database via sqlite3-offline-next.');
-    }
+  if (err) {
+    console.error('Database connection error:', err.message);
+  } else {
+    console.log('Connected to SQLite database via sqlite3-offline-next.');
+  }
 });
 
-// Initialize Database Tables
+// Initialize database schema
 db.serialize(() => {
-    // Users Table
-    db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            full_name TEXT,
-            email TEXT UNIQUE,
-            phone TEXT,
-            password TEXT,
-            role TEXT DEFAULT 'client',
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
+  // Products table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
+      price REAL NOT NULL,
+      category TEXT,
+      image_url TEXT,
+      stock_quantity INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-    // Loans Table
-    db.run(`
-        CREATE TABLE IF NOT EXISTS loans (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            amount REAL,
-            duration INTEGER,
-            interest_rate REAL,
-            status TEXT DEFAULT 'pending',
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    `);
+  // Categories table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      slug TEXT NOT NULL UNIQUE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-    // Repayments Table
-    db.run(`
-        CREATE TABLE IF NOT EXISTS repayments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            loan_id INTEGER,
-            amount_paid REAL,
-            payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (loan_id) REFERENCES loans(id)
-        )
-    `);
+  // Customers table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS customers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      phone TEXT,
+      address TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-    // Seed Default Admin User if empty
-    db.get("SELECT * FROM users WHERE email = 'admin@classicfabtrends.com'", (err, row) => {
-        if (!row) {
-            db.run(`
-                INSERT INTO users (full_name, email, phone, password, role)
-                VALUES ('System Admin', 'admin@classicfabtrends.com', '0970000000', 'admin123', 'admin')
-            `);
-            console.log('Default admin account created.');
-        }
-    });
+  // Orders table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customer_id INTEGER,
+      total_amount REAL NOT NULL,
+      payment_status TEXT DEFAULT 'pending',
+      order_status TEXT DEFAULT 'processing',
+      shipping_address TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (customer_id) REFERENCES customers(id)
+    )
+  `);
+
+  // Order Items table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS order_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      order_id INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      unit_price REAL NOT NULL,
+      FOREIGN KEY (order_id) REFERENCES orders(id),
+      FOREIGN KEY (product_id) REFERENCES products(id)
+    )
+  `);
 });
 
-// ==========================================
-// API ROUTES
-// ==========================================
-
-// Health Check Route for Render
+// System & Health Check Endpoints
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Backend service is running smoothly.' });
+  res.json({
+    status: 'online',
+    service: 'ClassicFabTrends Backend API',
+    database: 'sqlite3-offline-next',
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Register User
-app.post('/api/register', (req, res) => {
-    const { full_name, email, phone, password } = req.body;
-    
-    if (!full_name || !email || !password) {
-        return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
-    }
-
-    const query = `INSERT INTO users (full_name, email, phone, password) VALUES (?, ?, ?, ?)`;
-    db.run(query, [full_name, email, phone, password], function(err) {
-        if (err) {
-            if (err.message.includes('UNIQUE')) {
-                return res.status(400).json({ success: false, message: 'Email address already registered.' });
-            }
-            return res.status(500).json({ success: false, message: 'Database error occurred.' });
-        }
-        res.json({ success: true, userId: this.lastID, message: 'Registration successful!' });
-    });
+// Product API Endpoints
+app.get('/api/products', (req, res) => {
+  const query = 'SELECT * FROM products ORDER BY created_at DESC';
+  db.all(query, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
-// User Login
-app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-
-    const query = `SELECT id, full_name, email, phone, role FROM users WHERE email = ? AND password = ?`;
-    db.get(query, [email, password], (err, user) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Database error.' });
-        }
-        if (user) {
-            res.json({ success: true, user, message: 'Login successful!' });
-        } else {
-            res.status(401).json({ success: false, message: 'Invalid email or password.' });
-        }
-    });
+app.get('/api/products/:id', (req, res) => {
+  const query = 'SELECT * FROM products WHERE id = ?';
+  db.get(query, [req.params.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Product not found' });
+    res.json(row);
+  });
 });
 
-// Submit Loan Application
-app.post('/api/loans/apply', (req, res) => {
-    const { user_id, amount, duration, interest_rate } = req.body;
-
-    if (!user_id || !amount || !duration) {
-        return res.status(400).json({ success: false, message: 'Missing loan application details.' });
-    }
-
-    const query = `INSERT INTO loans (user_id, amount, duration, interest_rate) VALUES (?, ?, ?, ?)`;
-    db.run(query, [user_id, amount, duration, interest_rate || 10], function(err) {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Failed to record loan application.' });
-        }
-        res.json({ success: true, loanId: this.lastID, message: 'Loan application submitted successfully.' });
-    });
+app.post('/api/products', (req, res) => {
+  const { name, description, price, category, image_url, stock_quantity } = req.body;
+  if (!name || !price) {
+    return res.status(400).json({ error: 'Name and price are required parameters.' });
+  }
+  const query = `INSERT INTO products (name, description, price, category, image_url, stock_quantity) VALUES (?, ?, ?, ?, ?, ?)`;
+  db.run(query, [name, description, price, category, image_url, stock_quantity || 0], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ id: this.lastID, message: 'Product successfully created.' });
+  });
 });
 
-// Get User Loans
-app.get('/api/loans/user/:userId', (req, res) => {
-    const userId = req.params.userId;
-    const query = `SELECT * FROM loans WHERE user_id = ? ORDER BY created_at DESC`;
-
-    db.all(query, [userId], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Error retrieving user loans.' });
-        }
-        res.json({ success: true, loans: rows });
-    });
+app.put('/api/products/:id', (req, res) => {
+  const { name, description, price, category, image_url, stock_quantity } = req.body;
+  const query = `UPDATE products SET name = ?, description = ?, price = ?, category = ?, image_url = ?, stock_quantity = ? WHERE id = ?`;
+  db.run(query, [name, description, price, category, image_url, stock_quantity, req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Product not found' });
+    res.json({ message: 'Product updated successfully.' });
+  });
 });
 
-// Get All Loans (Admin)
-app.get('/api/admin/loans', (req, res) => {
-    const query = `
-        SELECT loans.*, users.full_name, users.email, users.phone 
-        FROM loans 
-        JOIN users ON loans.user_id = users.id 
-        ORDER BY loans.created_at DESC
-    `;
-
-    db.all(query, [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Error retrieving all loans.' });
-        }
-        res.json({ success: true, loans: rows });
-    });
+app.delete('/api/products/:id', (req, res) => {
+  const query = 'DELETE FROM products WHERE id = ?';
+  db.run(query, [req.params.id], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: 'Product not found' });
+    res.json({ message: 'Product deleted successfully.' });
+  });
 });
 
-// Update Loan Status (Approve/Reject)
-app.post('/api/admin/loans/status', (req, res) => {
-    const { loan_id, status } = req.body;
-
-    const query = `UPDATE loans SET status = ? WHERE id = ?`;
-    db.run(query, [status, loan_id], function(err) {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Failed to update loan status.' });
-        }
-        res.json({ success: true, message: `Loan status updated to ${status}.` });
-    });
+// Category API Endpoints
+app.get('/api/categories', (req, res) => {
+  db.all('SELECT * FROM categories ORDER BY name ASC', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
-// Record Repayment
-app.post('/api/repayments/pay', (req, res) => {
-    const { loan_id, amount_paid } = req.body;
-
-    const query = `INSERT INTO repayments (loan_id, amount_paid) VALUES (?, ?)`;
-    db.run(query, [loan_id, amount_paid], function(err) {
-        if (err) {
-            return res.status(500).json({ success: false, message: 'Error saving repayment record.' });
-        }
-        res.json({ success: true, repaymentId: this.lastID, message: 'Payment recorded successfully.' });
-    });
+app.post('/api/categories', (req, res) => {
+  const { name, slug } = req.body;
+  if (!name || !slug) return res.status(400).json({ error: 'Category name and slug are required.' });
+  db.run('INSERT INTO categories (name, slug) VALUES (?, ?)', [name, slug], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ id: this.lastID, message: 'Category added.' });
+  });
 });
 
-// Catch-All Route to serve frontend index.html
+// Order API Endpoints
+app.get('/api/orders', (req, res) => {
+  const query = `
+    SELECT orders.*, customers.full_name, customers.email 
+    FROM orders 
+    LEFT JOIN customers ON orders.customer_id = customers.id 
+    ORDER BY orders.created_at DESC
+  `;
+  db.all(query, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.post('/api/orders', (req, res) => {
+  const { customer_id, total_amount, shipping_address } = req.body;
+  if (!total_amount) return res.status(400).json({ error: 'Order total amount is required.' });
+  const query = 'INSERT INTO orders (customer_id, total_amount, shipping_address) VALUES (?, ?, ?)';
+  db.run(query, [customer_id, total_amount, shipping_address], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ order_id: this.lastID, message: 'Order created successfully.' });
+  });
+});
+
+// Single Page Application Fallback Route
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  const indexFile = path.join(__dirname, 'public', 'index.html');
+  res.sendFile(indexFile, (err) => {
+    if (err) {
+      res.status(200).send('ClassicFabTrends Node.js Backend Server is Running.');
+    }
+  });
 });
 
-// Start Server Listener
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Server Listen & Vercel Module Export
+const PORT = process.env.PORT || 3000;
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running locally on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
