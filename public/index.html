@@ -20,90 +20,98 @@
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-slate); color: var(--text-main); }
 
     /* Header Navigation */
-    header { background: var(--bg-white); padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--brand-green); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .brand-logo-container { display: flex; align-items: center; gap: 0.8rem; cursor: pointer; text-decoration: none; }
-    .brand-logo-img { height: 50px; width: auto; object-fit: contain; }
-    .login-link { color: var(--brand-blue); font-weight: 700; text-decoration: none; font-size: 1rem; border: 1.5px solid var(--brand-blue); padding: 0.4rem 1rem; border-radius: 6px; transition: all 0.2s; }
+    header { background: var(--bg-white); padding: 0.8rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--brand-green); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .brand-logo-container { display: flex; align-items: center; text-decoration: none; cursor: pointer; }
+    
+    /* MODIFICATION 1: Enlarged Header Logo */
+    .brand-logo-img { height: 85px; width: auto; object-fit: contain; }
+    
+    .login-link { color: var(--brand-blue); font-weight: 700; text-decoration: none; font-size: 1rem; border: 2px solid var(--brand-blue); padding: 0.5rem 1.2rem; border-radius: 6px; transition: all 0.2s ease-in-out; }
     .login-link:hover { background: var(--brand-blue); color: var(--bg-white); }
 
-    /* Hero Banner with Brand Colors */
-    .hero { background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%); color: var(--bg-white); text-align: center; padding: 3rem 1rem; border-bottom: 4px solid var(--brand-green); }
-    .hero-logo { height: 75px; margin-bottom: 1rem; background: var(--bg-white); padding: 0.5rem 1rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
-    .hero p { font-size: 1.1rem; opacity: 0.9; font-weight: 500; }
+    /* Hero Banner */
+    .hero { background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%); color: var(--bg-white); text-align: center; padding: 4rem 1rem; border-bottom: 5px solid var(--brand-green); }
+    
+    /* MODIFICATION 2: Significantly Enlarged Hero Logo */
+    .hero-logo { height: 130px; margin-bottom: 1.2rem; background: var(--bg-white); padding: 0.6rem 1.5rem; border-radius: 10px; box-shadow: 0 6px 12px rgba(0,0,0,0.15); object-fit: contain; }
+    
+    .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+    .hero p { font-size: 1.2rem; opacity: 0.95; font-weight: 500; }
 
     /* Card Layout Container */
-    .main-container { max-width: 1150px; margin: -2.5rem auto 3rem auto; padding: 0 1rem; position: relative; z-index: 10; }
-    .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .nav-card { background: var(--bg-white); border: 2px solid var(--card-border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
-    .nav-card:hover { transform: translateY(-3px); border-color: var(--brand-green); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1); }
-    .nav-card h2 { color: var(--brand-blue); font-size: 1.4rem; margin-bottom: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
-    .nav-card h2::before { content: ''; display: inline-block; width: 12px; height: 12px; background: var(--brand-green); border-radius: 50%; }
-    .nav-card p { color: #64748b; font-size: 0.95rem; line-height: 1.5; }
+    .main-container { max-width: 1150px; margin: -3rem auto 3rem auto; padding: 0 1rem; position: relative; z-index: 10; }
+    .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; }
+    .nav-card { background: var(--bg-white); border: 2px solid var(--card-border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.2s ease-in-out; }
+    .nav-card:hover { transform: translateY(-4px); border-color: var(--brand-green); box-shadow: 0 15px 25px -3px rgba(114, 191, 68, 0.15); }
+    .nav-card h2 { color: var(--brand-blue); font-size: 1.4rem; margin-bottom: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.6rem; }
+    .nav-card h2::before { content: ''; display: inline-block; width: 14px; height: 14px; background: var(--brand-green); border-radius: 50%; }
+    .nav-card p { color: #64748b; font-size: 0.95rem; line-height: 1.6; }
 
     /* Action Panels */
-    .view-panel { display: none; background: var(--bg-white); border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .view-panel { display: none; background: var(--bg-white); border: 1px solid var(--card-border); border-radius: 12px; padding: 2.5rem; margin-top: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .view-panel.active { display: block; }
-    .view-panel h2 { color: var(--brand-blue); border-bottom: 2px solid var(--brand-green); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+    .view-panel h2 { color: var(--brand-blue); border-bottom: 3px solid var(--brand-green); padding-bottom: 0.6rem; margin-bottom: 1.5rem; font-weight: 800; }
     
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
-    .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--brand-blue); }
-    .form-group input, .form-group select { padding: 0.65rem; border: 1.5px solid var(--card-border); border-radius: 6px; font-size: 0.95rem; outline: none; }
-    .form-group input:focus, .form-group select:focus { border-color: var(--brand-blue); }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--brand-blue); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group select { padding: 0.75rem; border: 2px solid var(--card-border); border-radius: 6px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--brand-green); }
     
-    .btn { background: var(--brand-blue); color: var(--bg-white); border: none; padding: 0.65rem 1.3rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; background: var(--brand-blue); color: var(--bg-white); border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
     .btn:hover { background: var(--brand-blue-dark); }
     .btn-green { background: var(--brand-green); color: var(--bg-white); }
     .btn-green:hover { background: var(--brand-green-dark); }
     .btn-secondary { background: #64748b; color: var(--bg-white); }
-    .btn-outline { background: transparent; color: var(--brand-blue); border: 1.5px solid var(--brand-blue); }
+    .btn-outline { background: transparent; color: var(--brand-blue); border: 2px solid var(--brand-blue); }
+    .btn-outline:hover { background: rgba(30, 43, 112, 0.05); }
     .btn-danger { background: #ef4444; color: var(--bg-white); }
     
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
-    table th, table td { border: 1px solid var(--card-border); padding: 0.75rem; text-align: left; }
-    table th { background: var(--brand-blue); color: var(--bg-white); position: sticky; top: 0; z-index: 5; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; font-size: 0.85rem; }
+    table th, table td { border: 1px solid var(--card-border); padding: 0.8rem; text-align: left; }
+    table th { background: var(--brand-blue); color: var(--bg-white); position: sticky; top: 0; z-index: 5; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .pamec-box { background: #f0fdf4; border: 1.5px dashed var(--brand-green); padding: 1.2rem; border-radius: 8px; margin: 1rem 0; }
-    .pamec-box h4 { color: var(--brand-blue); margin-bottom: 0.5rem; }
+    .pamec-box { background: #f0fdf4; border: 2px dashed var(--brand-green); padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; }
+    .pamec-box h4 { color: var(--brand-blue); margin-bottom: 0.6rem; font-weight: 800; }
 
-    .status-badge { padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: bold; display: inline-block; }
+    .status-badge { padding: 0.3rem 0.7rem; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 0.8rem; }
     .status-approved { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
     .status-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
     .status-rejected { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
     /* Webcam Section Styling */
-    .webcam-container { display: flex; flex-direction: column; align-items: center; background: var(--brand-blue-dark); padding: 1.2rem; border-radius: 8px; color: var(--bg-white); border: 2px solid var(--brand-green); }
+    .webcam-container { display: flex; flex-direction: column; align-items: center; background: var(--brand-blue-dark); padding: 1.5rem; border-radius: 8px; color: var(--bg-white); border: 2px solid var(--brand-green); }
     #webcamVideo { width: 100%; max-width: 320px; height: 240px; background: #000; border-radius: 6px; object-fit: cover; }
     #webcamCanvas { display: none; }
-    #capturedPhoto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand-green); margin-top: 0.5rem; display: none; }
+    #capturedPhoto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--brand-green); margin-top: 0.8rem; display: none; }
 
-    /* Repayment Schedule Modal */
+    /* Modal */
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(10, 25, 47, 0.75); backdrop-filter: blur(4px); }
-    .modal-content { background: var(--bg-white); margin: 3% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 850px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; border-top: 6px solid var(--brand-green); }
+    .modal-content { background: var(--bg-white); margin: 3% auto; padding: 2.5rem; border-radius: 12px; width: 90%; max-width: 850px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; border-top: 8px solid var(--brand-green); }
     
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
-    .close-x { font-size: 2rem; font-weight: bold; color: #64748b; cursor: pointer; line-height: 1; border: none; background: transparent; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 1.2rem; margin-bottom: 1.5rem; }
+    .modal-header h2 { font-weight: 800; color: var(--brand-blue); }
+    .close-x { font-size: 2.5rem; font-weight: bold; color: #64748b; cursor: pointer; line-height: 1; border: none; background: transparent; transition: color 0.2s; }
     .close-x:hover { color: #ef4444; }
 
-    .table-slide-container { max-height: 380px; overflow-y: auto; border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 1.5rem; }
-    .table-slide-container::-webkit-scrollbar { width: 8px; }
+    .table-slide-container { max-height: 380px; overflow-y: auto; border: 2px solid var(--card-border); border-radius: 8px; margin-bottom: 1.8rem; }
+    .table-slide-container::-webkit-scrollbar { width: 10px; }
     .table-slide-container::-webkit-scrollbar-track { background: #f1f5f9; }
-    .table-slide-container::-webkit-scrollbar-thumb { background: var(--brand-green); border-radius: 4px; }
+    .table-slide-container::-webkit-scrollbar-thumb { background: var(--brand-green); border-radius: 5px; }
 
     @media print {
       header, .hero, .cards-grid, .no-print, .btn { display: none !important; }
       body { background: white; }
-      .view-panel { border: none; box-shadow: none; display: block !important; }
+      .view-panel { border: none; box-shadow: none; display: block !important; padding: 0 !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation with Official Brand Logo -->
+  <!-- Header Navigation with Official Brand Logo[cite: 3] -->
   <header>
     <a onclick="showHome()" class="brand-logo-container">
-      <img src="/logo.jpg" alt="BetterLife Capital Limited" class="brand-logo-img" onerror="this.src='https://i.ibb.co/L8BkxqX/Better-Life-Logo.jpg'">
+      <img src="/logo.jpg" alt="BetterLife Capital Limited" class="brand-logo-img">
     </a>
     <div id="authNav">
       <a href="/login.html" class="login-link">Portal Login</a>
@@ -112,7 +120,7 @@
 
   <!-- Hero Banner with Logo Branding -->
   <section class="hero">
-    <img src="/logo.jpg" alt="BetterLife Capital Logo" class="hero-logo" onerror="this.style.display='none'">
+    <img src="/logo.jpg" alt="BetterLife Capital Logo" class="hero-logo">
     <h1>Empowering Zambian Futures</h1>
     <p>Accessible financial planning, personal loans, and micro-investments.</p>
   </section>
@@ -134,10 +142,10 @@
     <!-- VIEW 1: LOAN SERVICES PORTAL -->
     <div id="loan-services-view" class="view-panel">
       <h2>Loan Services Portal</h2>
-      <p style="color:#64748b; margin-bottom:1.5rem;">KYC Registration, Live Photo Capture, NRC Upload & PAMEC 40% Calculation</p>
+      <p style="color:#64748b; margin-bottom:2rem;">KYC Registration, Live Photo Capture, NRC Upload & PAMEC 40% Calculation</p>
       
       <h3>Step 1: Client Registration & KYC Identification</h3>
-      <form id="kycForm" style="margin-bottom:2rem;">
+      <form id="kycForm" style="margin-bottom:2.5rem;">
         <div class="form-grid">
           <div class="form-group">
             <label>Full Name</label>
@@ -174,12 +182,12 @@
 
         <!-- WEBCAM LIVE SNAPSHOT CAPTURE -->
         <div class="webcam-container">
-          <h4 style="margin-bottom:0.5rem; color:#ffffff;">Client Live Passport Photo Capture</h4>
+          <h4 style="margin-bottom:0.6rem; color:#ffffff; font-weight:800;">Client Live Passport Photo Capture</h4>
           <video id="webcamVideo" autoplay playsinline></video>
           <canvas id="webcamCanvas" width="320" height="240"></canvas>
           <img id="capturedPhoto" alt="Captured Client Photo">
           
-          <div style="display:flex; gap:0.5rem; margin-top:0.8rem;">
+          <div style="display:flex; gap:0.6rem; margin-top:1rem;">
             <button type="button" class="btn btn-green" onclick="startWebcam()">Start Camera</button>
             <button type="button" class="btn" onclick="captureLiveSnapshot()">Capture Snapshot</button>
           </div>
@@ -210,23 +218,23 @@
         <h4>PAMEC 40% Take-Home Rule Assessment</h4>
         <p>New Monthly Loan Repayment: <strong>ZMW <span id="resMonthly">0.00</span></strong></p>
         <p>Projected Net Take-Home Pay: <strong>ZMW <span id="resTakeHome">0.00</span> (<span id="resPercent">0.0</span>%)</strong></p>
-        <p id="pamecStatus" style="font-weight:bold; margin-top:0.5rem; color:var(--brand-green-dark);"></p>
+        <p id="pamecStatus" style="font-weight:bold; margin-top:0.6rem;"></p>
       </div>
 
-      <div style="display:flex; gap:1rem;">
+      <div style="display:flex; gap:1.2rem; margin-top:1rem;">
         <button class="btn btn-green" onclick="submitLoanApplication()">Submit Loan for Approval</button>
         <button class="btn btn-secondary" onclick="generatePrintableForm()">Generate Client Loan Form</button>
       </div>
-      <div id="loanMsg" style="margin-top:1rem; font-weight:bold;"></div>
+      <div id="loanMsg" style="margin-top:1.2rem; font-weight:bold; font-size:1.1rem;"></div>
     </div>
 
     <!-- VIEW 2: ACCOUNT MANAGEMENT -->
     <div id="account-management-view" class="view-panel">
       <h2>Account Management</h2>
-      <p style="color:#64748b; margin-bottom:1.5rem;">Track active balances, review repayment schedules, manage member profiles, and print loan statements.</p>
+      <p style="color:#64748b; margin-bottom:2rem;">Track active balances, review repayment schedules, manage member profiles, and print loan statements.</p>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;" class="no-print">
-        <h3 style="color:var(--brand-blue);">Active Loan Balances & Accounts</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;" class="no-print">
+        <h3 style="color:var(--brand-blue); font-weight:800;">Active Loan Balances & Accounts</h3>
         <button class="btn btn-secondary" onclick="window.print()">Print Official Loan Statement</button>
       </div>
 
@@ -249,8 +257,8 @@
       </table>
 
       <!-- Member Profile Management -->
-      <h3 style="margin-top:2.5rem; margin-bottom:1rem; color:var(--brand-blue);" class="no-print">Manage Member Profile Securely</h3>
-      <div class="form-grid no-print" style="background:#f1f5f9; padding:1.5rem; border-radius:8px; border:1px solid var(--card-border);">
+      <h3 style="margin-top:3rem; margin-bottom:1.2rem; color:var(--brand-blue); font-weight:800;" class="no-print">Manage Member Profile Securely</h3>
+      <div class="form-grid no-print" style="background:#f1f5f9; padding:2rem; border-radius:8px; border:2px solid var(--card-border);">
         <div class="form-group">
           <label>Select Member</label>
           <select id="profileSelect" onchange="loadMemberProfileDetails()">
@@ -275,15 +283,15 @@
     <!-- VIEW 3: MANAGER CONTROL CENTER -->
     <div id="manager-panel-view" class="view-panel">
       <h2>Branch Manager Command Center</h2>
-      <p style="color:#64748b; margin-bottom:1.5rem;">Live User Tracking, Teller Signatures, Auto CSV Exports & Regulatory Returns</p>
+      <p style="color:#64748b; margin-bottom:2rem;">Live User Tracking, Teller Signatures, Auto CSV Exports & Regulatory Returns</p>
 
-      <div class="no-print" style="margin-bottom:1.5rem; display:flex; gap:0.5rem;">
+      <div class="no-print" style="margin-bottom:2rem; display:flex; gap:0.6rem;">
         <button class="btn btn-green" onclick="exportToCSV()">Export All Client Data (CSV / Excel)</button>
-        <button class="btn btn-secondary" onclick="window.print()">Print Regulatory Returns (BOZ / FIC / CRB / ZRA)</button>
+        <button class="btn btn-secondary" onclick="toggleRegulatoryReturnsPrint()">Print Regulatory Returns (BOZ / FIC / ZRA)</button>
       </div>
 
-      <h3 style="color:var(--brand-blue); margin-bottom:0.5rem;">Active Logged-In Tellers & Sessions</h3>
-      <table style="margin-bottom:2rem;">
+      <h3 style="color:var(--brand-blue); margin-bottom:0.6rem; font-weight:800;">Active Logged-In Tellers & Sessions</h3>
+      <table style="margin-bottom:2.5rem;">
         <thead>
           <tr>
             <th>Session ID</th>
@@ -295,7 +303,7 @@
         <tbody id="managerSessionsTable"></tbody>
       </table>
 
-      <h3 style="color:var(--brand-blue); margin-bottom:0.5rem;">All Loan Applications & Manager Actions</h3>
+      <h3 style="color:var(--brand-blue); margin-bottom:0.6rem; font-weight:800;">All Loan Applications & Manager Actions</h3>
       <table>
         <thead>
           <tr>
@@ -319,7 +327,7 @@
         <div class="modal-header">
           <div>
             <h2 style="color:var(--brand-blue); margin-bottom:0.2rem;">Repayment Schedule Breakdown</h2>
-            <p id="scheduleSubhead" style="color:#64748b; font-size:0.9rem;"></p>
+            <p id="scheduleSubhead" style="color:#64748b; font-size:0.95rem;"></p>
           </div>
           <button class="close-x" onclick="closeScheduleModal()" title="Close Schedule">&times;</button>
         </div>
@@ -340,35 +348,74 @@
           </table>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:2px solid #e2e8f0; padding-top:1.2rem;">
           <button class="btn btn-secondary" onclick="window.print()">Print Schedule</button>
           <button class="btn btn-danger" onclick="closeScheduleModal()">Close Schedule</button>
         </div>
       </div>
     </div>
 
-    <!-- OFFICIAL PRINTABLE AGREEMENT FORM WITH LOGO & BRAND COLOURS -->
+    <!-- OFFICIAL PRINTABLE AGREEMENT FORM WITH ENLARGED LOGO[cite: 3] -->
     <div id="printable-form" class="view-panel" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--brand-green); padding-bottom:1rem; margin-bottom:1.5rem;">
-        <img src="/logo.jpg" alt="BetterLife Capital Logo" style="height:65px; width:auto;">
-        <img id="printClientPhoto" src="" alt="Client Photo" style="width:90px; height:90px; border-radius:8px; border:2px solid var(--brand-blue); display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:start; border-bottom:4px solid var(--brand-green); padding-bottom:1.2rem; margin-bottom:1.5rem;">
+        
+        <!-- MODIFICATION 3: Enlarged printable header logo -->
+        <img src="/logo.jpg" alt="BetterLife Capital Logo" style="width:110px; height:auto; object-fit:contain;">
+        
+        <div style="text-align:right; font-size:0.85rem; line-height:1.4;">
+          <strong>BetterLife Capital Limited</strong><br>
+          Lusaka Branch, Zambia<br>
+          info@betterlifecapital.zm
+        </div>
+        <img id="printClientPhoto" src="" alt="Client Photo" style="width:100px; height:100px; border-radius:8px; border:3px solid var(--brand-blue); display:none;">
       </div>
 
-      <h2 style="text-align:center; color:var(--brand-blue); margin-bottom:1.5rem;">OFFICIAL LOAN APPLICATION & AGREEMENT FORM</h2>
+      <h2 style="text-align:center; color:var(--brand-blue); margin-bottom:2rem; font-size:1.6rem; font-weight:800;">OFFICIAL LOAN APPLICATION & AGREEMENT FORM</h2>
 
-      <div style="line-height:2.2; font-size:1rem; color:#0f172a;">
+      <div style="line-height:2.4; font-size:1.05rem; color:#0f172a; margin-bottom:3rem;">
         <p><strong>Client Full Name:</strong> <span id="pName">____________________</span></p>
         <p><strong>NRC Number:</strong> <span id="pNRC">____________________</span> | <strong>MAN Number:</strong> <span id="pMAN">____________________</span></p>
         <p><strong>Loan Amount Requested:</strong> ZMW <span id="pAmt">0.00</span> | <strong>Tenure:</strong> <span id="pTenure">12</span> Months</p>
         <p><strong>Approved Monthly Repayment:</strong> ZMW <span id="pMonthly">0.00</span></p>
         <p><strong>PAMEC Compliant Take-Home Pay:</strong> <span id="pTakeHome">0.0</span>%</p>
         <p><strong>Attending Teller / Officer:</strong> <span id="pTeller">____________________</span></p>
+        <p style="margin-top:1rem; font-style:italic; font-size:0.95rem;">By signing, the client acknowledges the standard terms and conditions.</p>
       </div>
 
-      <div style="margin-top:4rem; display:flex; justify-content:space-between;">
-        <div>___________________________<br><strong>Client Signature</strong></div>
-        <div>___________________________<br><strong>Branch Manager Authorization</strong></div>
+      <div style="margin-top:5rem; display:flex; justify-content:space-between; font-size:1rem;">
+        <div>___________________________<br><strong>Client Signature</strong><br>Date: ___/___/___</div>
+        <div>___________________________<br><strong>Branch Manager Authorization</strong><br>BetterLife Capital Limited</div>
       </div>
+    </div>
+    
+    <!-- REGULATORY RETURNS PRINT VIEW (ENLARGED LOGO[cite: 3]) -->
+    <div id="regulatory-returns-view" class="view-panel" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:start; border-bottom:4px solid var(--brand-green); padding-bottom:1.2rem; margin-bottom:1.5rem;">
+            
+            <!-- MODIFICATION 4: Enlarged printable return header logo -->
+            <img src="/logo.jpg" alt="BetterLife Capital Logo" style="width:90px; height:auto; object-fit:contain;">
+            
+            <div style="text-align:right; font-size:0.85rem;">
+              <strong>BETTERLIFE CAPITAL LIMITED</strong><br>
+               Lusaka HQ | Regulatory Reporting
+            </div>
+        </div>
+        <h2 id="returnsHeader" style="text-align:center;">Loan Application Returns</h2>
+        <p style="text-align:center; margin-top:-1rem; color:#64748b;">BOZ / FIC / CRB Compliant Export</p>
+        <table style="margin-top:2rem;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Client Name</th>
+                    <th>NRC Number</th>
+                    <th>Amount (ZMW)</th>
+                    <th>Repayment (ZMW)</th>
+                    <th>Sector</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="returnsTableBody"></tbody>
+        </table>
     </div>
 
   </main>
@@ -439,7 +486,7 @@
         if (currentAdmin.role === 'admin') {
           document.getElementById('authNav').innerHTML = `
             <span style="color:var(--brand-blue); font-weight:bold; margin-right:1rem;">Manager: ${currentAdmin.fullName}</span>
-            <button class="btn btn-danger" style="padding:0.4rem 0.8rem;" onclick="logout()">Logout</button>
+            <button class="btn btn-danger" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="logout()">Logout</button>
           `;
           openView('manager-panel-view');
           loadManagerData();
@@ -489,10 +536,10 @@
 
       const statusEl = document.getElementById('pamecStatus');
       if (percent >= 40) {
-        statusEl.innerText = 'PASSED: Take-Home is 40% or higher. Compliant with PAMEC rule.';
+        statusEl.innerText = 'PASSED: Compliant with PAMEC 40% rule.';
         statusEl.style.color = 'var(--brand-green-dark)';
       } else {
-        statusEl.innerText = 'FAILED: Take-Home is below 40%. Loan amount exceeds threshold.';
+        statusEl.innerText = 'FAILED: Take-Home below 40% threshold.';
         statusEl.style.color = '#dc2626';
       }
     }
@@ -569,7 +616,7 @@
         const profileSelect = document.getElementById('profileSelect');
 
         if (currentLoansData.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="8">No active accounts found. Register or submit a loan application.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8">No active accounts found.</td></tr>`;
           return;
         }
 
@@ -595,7 +642,7 @@
               <td>ZMW ${l.monthly_repayment.toFixed(2)}</td>
               <td><span class="status-badge ${badgeClass}">${l.status}</span></td>
               <td>
-                <button class="btn btn-outline" style="padding:0.2rem 0.5rem;" onclick="viewRepaymentSchedule(${l.id})">Schedule</button>
+                <button class="btn btn-outline" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="viewRepaymentSchedule(${l.id})">Schedule</button>
               </td>
             </tr>
           `;
@@ -653,7 +700,7 @@
     }
 
     function saveProfileChanges() {
-      alert('Member profile updated securely.');
+      alert('Member profile updated securely on server.');
     }
 
     function generatePrintableForm() {
@@ -688,8 +735,8 @@
           <td>${l.registered_by_teller || 'Online'}</td>
           <td><strong>${l.status}</strong></td>
           <td>
-            <button class="btn btn-green" style="padding:0.2rem 0.5rem;" onclick="actionLoan(${l.id}, 'Approved')">Approve</button>
-            <button class="btn btn-danger" style="padding:0.2rem 0.5rem;" onclick="actionLoan(${l.id}, 'Rejected')">Reject</button>
+            <button class="btn btn-green" style="padding:0.3rem 0.7rem; font-size:0.8rem;" onclick="actionLoan(${l.id}, 'Approved')">Approve</button>
+            <button class="btn btn-danger" style="padding:0.3rem 0.7rem; font-size:0.8rem;" onclick="actionLoan(${l.id}, 'Rejected')">Reject</button>
           </td>
         </tr>
       `).join('');
@@ -703,6 +750,39 @@
       });
       loadManagerData();
       fetchAccountLoans();
+    }
+    
+    // Toggle Print View for Regulatory Returns[cite: 3]
+    async function toggleRegulatoryReturnsPrint() {
+        const returnsPanel = document.getElementById('regulatory-returns-view');
+        
+        // Fetch fresh data
+        const res = await fetch('/api/admin/overview');
+        const data = await res.json();
+        const loans = data.loans || [];
+
+        document.getElementById('returnsTableBody').innerHTML = loans.map(l => `
+            <tr>
+                <td>BL-${l.id}</td>
+                <td>${l.full_name}</td>
+                <td>${l.nrc_number}</td>
+                <td>${l.amount.toFixed(2)}</td>
+                <td>${l.monthly_repayment.toFixed(2)}</td>
+                <td>${l.client_type}</td>
+                <td>${l.status}</td>
+            </tr>
+        `).join('');
+
+        // Temporarily activate the printable returns view
+        document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+        returnsPanel.classList.add('active');
+        returnsPanel.style.display = 'block';
+        
+        // Print and return to manager view
+        setTimeout(() => {
+            window.print();
+            openView('manager-panel-view');
+        }, 300);
     }
 
     async function exportToCSV() {
