@@ -19,16 +19,16 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-slate); color: var(--text-main); }
 
-    /* Top Navigation Header: Styled to expand the top-left logo */
+    /* Top Navigation Header: Configured to let the logo span the yellow circled area */
     header { 
       background: var(--bg-white); 
-      padding: 0.8rem 2rem; 
+      padding: 0.5rem 2rem; 
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
       border-bottom: 5px solid var(--brand-green); 
       box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-      min-height: 110px;
+      min-height: 150px;
     }
 
     .brand-logo-container { 
@@ -36,14 +36,16 @@
       align-items: center; 
       text-decoration: none; 
       cursor: pointer;
-      max-width: 65%;
+      flex: 1;
+      height: 140px;
+      margin-right: 2rem;
     }
     
-    /* Top Left Logo Styling: Fills the entire top header white space */
+    /* Logo sizing to fill the top white header space */
     .brand-logo-img { 
-      height: 95px; 
-      max-height: 100px;
+      height: 100%; 
       width: auto; 
+      max-width: 100%;
       object-fit: contain; 
       object-position: left center;
       display: block;
@@ -55,10 +57,11 @@
       text-decoration: none; 
       font-size: 1.05rem; 
       border: 2px solid var(--brand-blue); 
-      padding: 0.6rem 1.4rem; 
+      padding: 0.65rem 1.5rem; 
       border-radius: 8px; 
       transition: all 0.2s ease-in-out; 
       background: var(--bg-white);
+      white-space: nowrap;
     }
     .login-link:hover { 
       background: var(--brand-blue); 
@@ -147,7 +150,7 @@
 </head>
 <body>
 
-  <!-- Top Navigation Header with Logo Styled to Fill Top Left Space -->
+  <!-- Top Header Bar with Expanded Logo Header Area -->
   <header>
     <a onclick="showHome()" class="brand-logo-container" title="BetterLife Capital Limited">
       <img src="/logo.jpg" alt="BetterLife Capital Limited Logo" class="brand-logo-img">
@@ -393,7 +396,7 @@
       </div>
     </div>
 
-    <!-- OFFICIAL PRINTABLE AGREEMENT FORM WITH LOGO HEADER -->
+    <!-- OFFICIAL PRINTABLE AGREEMENT FORM -->
     <div id="printable-form" class="view-panel" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:start; border-bottom:4px solid var(--brand-green); padding-bottom:1.2rem; margin-bottom:1.5rem;">
         
@@ -463,7 +466,6 @@
     let currentLoansData = [];
     let capturedImageData = null;
 
-    // Web Audio Pop Sound Generator
     function playPopSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -487,7 +489,6 @@
       }
     }
 
-    // WEBCAM INTEGRATION
     async function startWebcam() {
       try {
         const video = document.getElementById('webcamVideo');
