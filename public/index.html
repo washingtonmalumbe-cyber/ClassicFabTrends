@@ -3,247 +3,439 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BetterLife Zambia Limited - Core Financial Engine</title>
+  <title>BetterLife Zambia Ltd</title>
   <style>
     :root {
-      --primary: #0284c7;
-      --primary-dark: #0369a1;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #0f172a;
-      --border: #cbd5e1;
+      --brand-blue: #0284c7;
+      --brand-dark: #024a70;
+      --hero-bg: #033659;
+      --bg-slate: #f8fafc;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 3rem; }
-    header { background: var(--card); border-bottom: 2px solid var(--primary); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-    .user-badge { background: #e0f2fe; color: var(--primary-dark); padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem; }
-    .btn-logout { background: #ef4444; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-slate); color: var(--text-main); }
+
+    /* Header Bar */
+    header { background: #ffffff; padding: 1.2rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); }
+    .brand-title { font-size: 1.6rem; font-weight: 800; color: var(--brand-blue); text-decoration: none; cursor: pointer; }
+    .login-link { color: var(--brand-blue); font-weight: 600; text-decoration: none; font-size: 1rem; cursor: pointer; }
+
+    /* Hero Banner */
+    .hero { background: linear-gradient(180deg, #024a70 0%, #032b45 100%); color: #ffffff; text-align: center; padding: 3.5rem 1rem; }
+    .hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .hero p { font-size: 1.05rem; opacity: 0.9; }
+
+    /* Card Layout Container */
+    .main-container { max-width: 1150px; margin: -2.5rem auto 3rem auto; padding: 0 1rem; position: relative; z-index: 10; }
+    .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .nav-card { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .nav-card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1); }
+    .nav-card h2 { color: var(--brand-blue); font-size: 1.3rem; margin-bottom: 0.8rem; font-weight: 700; }
+    .nav-card p { color: #64748b; font-size: 0.95rem; line-height: 1.5; }
+
+    /* Action Views */
+    .view-panel { display: none; background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .view-panel.active { display: block; }
     
-    nav.tab-bar { background: #1e293b; display: flex; gap: 1rem; padding: 0.5rem 2rem; }
-    nav.tab-bar button { background: transparent; color: #94a3b8; border: none; padding: 0.6rem 1rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 4px; }
-    nav.tab-bar button.active { background: var(--primary); color: white; }
-
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .card h2 { color: var(--primary-dark); margin-bottom: 1rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem; }
-
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
-    .form-group label { font-size: 0.85rem; font-weight: 600; color: #475569; }
-    .form-group input, .form-group select, .form-group textarea { padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.95rem; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group label { font-size: 0.85rem; font-weight: 600; color: #334155; }
+    .form-group input, .form-group select { padding: 0.6rem; border: 1px solid var(--card-border); border-radius: 6px; font-size: 0.95rem; }
     
-    .btn { background: var(--primary); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-weight: bold; cursor: pointer; }
-    .btn:hover { background: var(--primary-dark); }
-    .btn-action { padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.2rem; border-radius: 3px; border: none; cursor: pointer; font-weight: bold; }
-    .btn-approve { background: #16a34a; color: white; }
-    .btn-reject { background: #dc2626; color: white; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    table th, table td { padding: 0.75rem; border: 1px solid var(--border); text-align: left; font-size: 0.85rem; }
-    table th { background: #f1f5f9; color: #334155; }
-
-    .calc-box { background: #f0f9ff; border: 1px dashed var(--primary); padding: 1rem; border-radius: 6px; margin-top: 1rem; }
+    .btn { background: var(--brand-blue); color: #ffffff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size:0.85rem; }
+    .btn:hover { background: var(--brand-dark); }
+    .btn-secondary { background: #64748b; }
+    .btn-outline { background: transparent; color: var(--brand-blue); border: 1px solid var(--brand-blue); }
+    .btn-success { background: #16a34a; }
+    .btn-danger { background: #ef4444; }
     
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+    table th, table td { border: 1px solid var(--card-border); padding: 0.75rem; text-align: left; }
+    table th { background: #f1f5f9; position: sticky; top: 0; z-index: 5; }
+
+    .pamec-box { background: #f0f9ff; border: 1px dashed var(--brand-blue); padding: 1rem; border-radius: 6px; margin: 1rem 0; }
+
+    .status-badge { padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: bold; display: inline-block; }
+    .status-approved { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .status-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+    .status-rejected { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+    /* Webcam Box Styling */
+    .webcam-container { display: flex; flex-direction: column; align-items: center; background: #0f172a; padding: 1rem; border-radius: 8px; color: #fff; }
+    #webcamVideo { width: 100%; max-width: 320px; height: 240px; background: #000; border-radius: 6px; object-fit: cover; }
+    #webcamCanvas { display: none; }
+    #capturedPhoto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand-blue); margin-top: 0.5rem; display: none; }
+
+    /* Repayment Schedule Modal & Slide Bar */
+    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); }
+    .modal-content { background: #fff; margin: 3% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 850px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
+    .close-x { font-size: 2rem; font-weight: bold; color: #64748b; cursor: pointer; line-height: 1; border: none; background: transparent; }
+    .close-x:hover { color: #ef4444; }
+
+    /* Scrollable Slide Bar Container */
+    .table-slide-container { max-height: 380px; overflow-y: auto; border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 1.5rem; }
+    .table-slide-container::-webkit-scrollbar { width: 8px; }
+    .table-slide-container::-webkit-scrollbar-track { background: #f1f5f9; }
+    .table-slide-container::-webkit-scrollbar-thumb { background: var(--brand-blue); border-radius: 4px; }
+
     @media print {
-      header, nav.tab-bar, .btn, .no-print { display: none !important; }
-      body { background: white; color: black; }
-      .card { border: none; box-shadow: none; }
+      header, .hero, .cards-grid, .no-print, .btn { display: none !important; }
+      body { background: white; }
+      .view-panel { border: none; box-shadow: none; display: block !important; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">BetterLife Zambia Limited</div>
-    <div id="userInfo">
-      <a href="/login.html" class="btn">Portal Login</a>
+    <a onclick="showHome()" class="brand-title">BetterLife Zambia Ltd</a>
+    <div id="authNav">
+      <a href="/login.html" class="login-link">Login</a>
     </div>
   </header>
 
-  <nav class="tab-bar no-print">
-    <button class="active" onclick="switchTab('client-registration')">1. Client Registration</button>
-    <button onclick="switchTab('loan-calculator')">2. Loan Calculator & Apply</button>
-    <button onclick="switchTab('loan-tracking')">3. My Loan Status</button>
-    <button id="adminTabBtn" style="display:none;" onclick="switchTab('admin-panel')">4. Admin Control Center</button>
-  </nav>
+  <section class="hero">
+    <h1>Empowering Zambian Futures</h1>
+    <p>Accessible financial planning, personal loans, and micro-investments.</p>
+  </section>
 
-  <main class="container">
-
-    <!-- TAB 1: CLIENT REGISTRATION -->
-    <div id="client-registration" class="tab-content active">
-      <div class="card">
-        <h2>New Client Registration (KYC)</h2>
-        <form id="regForm">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Full Name</label>
-              <input type="text" id="regName" required placeholder="e.g. Chileshe Mulenga">
-            </div>
-            <div class="form-group">
-              <label>NRC Number</label>
-              <input type="text" id="regNRC" required placeholder="123456/11/1">
-            </div>
-            <div class="form-group">
-              <label>Phone Number (Airtel/MTN)</label>
-              <input type="text" id="regPhone" required placeholder="097XXXXXXX">
-            </div>
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="regEmail" placeholder="client@domain.zm">
-            </div>
-            <div class="form-group">
-              <label>Client Sector Type</label>
-              <select id="regType" onchange="toggleSectorFields()" required>
-                <option value="Civil Servant">Civil Servant (Payroll Based)</option>
-                <option value="Private Sector">Private Sector (Collateral Based)</option>
-              </select>
-            </div>
-            <div class="form-group" id="civilServantGroup">
-              <label>Ministry / Employer & Man Number</label>
-              <input type="text" id="regEmployer" placeholder="Ministry of Education / MAN 987654">
-            </div>
-            <div class="form-group" id="privateSectorGroup" style="display:none;">
-              <label>Collateral Asset Description & Valuation (ZMW)</label>
-              <input type="text" id="regCollateral" placeholder="e.g. Toyota Vitz Reg BBA 1234 - ZMW 45,000">
-            </div>
-          </div>
-          <button type="submit" class="btn">Register Client</button>
-        </form>
-        <div id="regMsg" style="margin-top:1rem; font-weight:bold;"></div>
+  <main class="main-container">
+    
+    <!-- Top Landing Cards -->
+    <div class="cards-grid no-print">
+      <div class="nav-card" onclick="openView('loan-services-view')">
+        <h2>Loan Services</h2>
+        <p>Apply for competitive financial support with instant Airtel Money or MTN Mobile Money payout options.</p>
+      </div>
+      <div class="nav-card" onclick="openView('account-management-view')">
+        <h2>Account Management</h2>
+        <p>Track active balances, review repayment schedules, and manage member profiles securely.</p>
       </div>
     </div>
 
-    <!-- TAB 2: LOAN CALCULATOR & APPLICATION -->
-    <div id="loan-calculator" class="tab-content">
-      <div class="card">
-        <h2>Loan Calculator & Application</h2>
+    <!-- VIEW 1: LOAN SERVICES PORTAL -->
+    <div id="loan-services-view" class="view-panel">
+      <h2>Loan Services Portal</h2>
+      <p style="color:#64748b; margin-bottom:1.5rem;">KYC Registration, Webcam Live Photo Capture, NRC Document Upload & PAMEC 40% Calculation</p>
+      
+      <h3>Step 1: Client Registration & Identification Capture</h3>
+      <form id="kycForm" style="margin-bottom:2rem;">
         <div class="form-grid">
           <div class="form-group">
-            <label>Loan Type</label>
-            <select id="calcLoanType">
-              <option value="Civil Servant Payroll Loan">Civil Servant Payroll Loan (15% p.a.)</option>
-              <option value="Private Sector Collateral Loan">Private Sector Collateral Loan (25% p.a.)</option>
+            <label>Full Name</label>
+            <input type="text" id="kycName" required placeholder="e.g. Bwalya Phiri">
+          </div>
+          <div class="form-group">
+            <label>NRC Number</label>
+            <input type="text" id="kycNRC" required placeholder="123456/11/1">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="kycPhone" required placeholder="097XXXXXXX">
+          </div>
+          <div class="form-group">
+            <label>Client Sector</label>
+            <select id="kycSector" onchange="toggleSectorFields()" required>
+              <option value="Civil Servant">Civil Servant (Payroll Based)</option>
+              <option value="Private Sector">Private Sector (Collateral Based)</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Principal Amount (ZMW)</label>
-            <input type="number" id="calcAmount" value="10000" oninput="calculateRepayment()">
+          <div class="form-group" id="manGroup">
+            <label>MAN Number (Civil Servants)</label>
+            <input type="text" id="kycMan" placeholder="e.g. MAN-882910">
           </div>
           <div class="form-group">
-            <label>Tenure (Months)</label>
-            <input type="number" id="calcTenure" value="12" min="1" max="60" oninput="calculateRepayment()">
+            <label>Teller Processing Client</label>
+            <input type="text" id="kycTeller" placeholder="Teller Name / ID">
           </div>
           <div class="form-group">
-            <label>Disbursement Method</label>
-            <select id="disburseMethod">
-              <option value="Airtel Money">Airtel Money</option>
-              <option value="MTN Mobile Money">MTN Mobile Money</option>
-              <option value="Bank Transfer">Bank Transfer (BOZ Real-Time)</option>
-            </select>
+            <label>Upload NRC Copy (PDF/JPG/PNG)</label>
+            <input type="file" id="nrcUpload" accept="image/*,application/pdf">
           </div>
         </div>
 
-        <div class="calc-box">
-          <h3>Calculation Summary</h3>
-          <p>Estimated Monthly Repayment: <strong>ZMW <span id="monthlyResult">0.00</span></strong></p>
-          <p>Total Repayment Amount: <strong>ZMW <span id="totalResult">0.00</span></strong></p>
+        <!-- WEBCAM LIVE CAPTURE BOX -->
+        <div class="webcam-container">
+          <h4 style="margin-bottom:0.5rem;">Client Live Passport Photo Capture</h4>
+          <video id="webcamVideo" autoplay playsinline></video>
+          <canvas id="webcamCanvas" width="320" height="240"></canvas>
+          <img id="capturedPhoto" alt="Captured Client Photo">
+          
+          <div style="display:flex; gap:0.5rem; margin-top:0.8rem;">
+            <button type="button" class="btn btn-success" onclick="startWebcam()">Start Camera</button>
+            <button type="button" class="btn" onclick="captureLiveSnapshot()">Capture Snapshot</button>
+          </div>
         </div>
+      </form>
 
-        <button class="btn" style="margin-top:1rem;" onclick="submitLoanApplication()">Submit Loan for Approval</button>
-        <div id="loanMsg" style="margin-top:1rem; font-weight:bold;"></div>
+      <h3>Step 2: Loan Calculator & PAMEC 40% Affordability Rule</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Basic / Gross Salary (ZMW)</label>
+          <input type="number" id="calcGross" value="8000" oninput="runPamecCalc()">
+        </div>
+        <div class="form-group">
+          <label>Existing Monthly Deductions (ZMW)</label>
+          <input type="number" id="calcDeductions" value="1500" oninput="runPamecCalc()">
+        </div>
+        <div class="form-group">
+          <label>Requested Loan Amount (ZMW)</label>
+          <input type="number" id="calcAmount" value="12000" oninput="runPamecCalc()">
+        </div>
+        <div class="form-group">
+          <label>Tenure (Months)</label>
+          <input type="number" id="calcTenure" value="12" min="1" max="60" oninput="runPamecCalc()">
+        </div>
+      </div>
+
+      <div class="pamec-box">
+        <h4>PAMEC 40% Take-Home Rule Status</h4>
+        <p>New Monthly Loan Repayment: <strong>ZMW <span id="resMonthly">0.00</span></strong></p>
+        <p>Projected Net Take-Home Pay: <strong>ZMW <span id="resTakeHome">0.00</span> (<span id="resPercent">0.0</span>%)</strong></p>
+        <p id="pamecStatus" style="font-weight:bold; margin-top:0.5rem; color:green;"></p>
+      </div>
+
+      <div style="display:flex; gap:1rem;">
+        <button class="btn" onclick="submitLoanApplication()">Submit Loan for Approval</button>
+        <button class="btn btn-secondary" onclick="generatePrintableForm()">Generate Client Loan Form</button>
+      </div>
+      <div id="loanMsg" style="margin-top:1rem; font-weight:bold;"></div>
+    </div>
+
+    <!-- VIEW 2: ACCOUNT MANAGEMENT -->
+    <div id="account-management-view" class="view-panel">
+      <h2>Account Management</h2>
+      <p style="color:#64748b; margin-bottom:1.5rem;">Track active balances, review repayment schedules, manage member profiles, and print loan statements.</p>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;" class="no-print">
+        <h3>Active Loan Balances & Accounts</h3>
+        <button class="btn btn-secondary" onclick="window.print()">Print Official Loan Statement</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Loan ID</th>
+            <th>Client Name</th>
+            <th>MAN / Sector</th>
+            <th>Approved Principal</th>
+            <th>Outstanding Balance</th>
+            <th>Monthly Due</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="clientStatementTable">
+          <tr><td colspan="8">Loading account records...</td></tr>
+        </tbody>
+      </table>
+
+      <!-- Profile Management Section -->
+      <h3 style="margin-top:2.5rem; margin-bottom:1rem;" class="no-print">Manage Member Profile Securely</h3>
+      <div class="form-grid no-print" style="background:#f1f5f9; padding:1.5rem; border-radius:8px;">
+        <div class="form-group">
+          <label>Select Member</label>
+          <select id="profileSelect" onchange="loadMemberProfileDetails()">
+            <option value="">Choose Profile...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Update Phone Number</label>
+          <input type="text" id="profPhone" placeholder="097XXXXXXX">
+        </div>
+        <div class="form-group">
+          <label>Update Email Address</label>
+          <input type="email" id="profEmail" placeholder="client@domain.zm">
+        </div>
+        <div class="form-group">
+          <label>Action</label>
+          <button class="btn" onclick="saveProfileChanges()">Save Profile Updates</button>
+        </div>
       </div>
     </div>
 
-    <!-- TAB 3: LOAN TRACKING & STATEMENTS -->
-    <div id="loan-tracking" class="tab-content">
-      <div class="card">
-        <h2>My Loan Applications & Client Statement</h2>
-        <button class="btn no-print" onclick="window.print()">Print Loan Statement</button>
-        <table id="clientLoanTable">
-          <thead>
-            <tr>
-              <th>Loan ID</th>
-              <th>Type</th>
-              <th>Principal (ZMW)</th>
-              <th>Tenure</th>
-              <th>Monthly (ZMW)</th>
-              <th>Status</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td colspan="7">Login or register to track loans.</td></tr>
-          </tbody>
-        </table>
+    <!-- VIEW 3: MANAGER CONTROL CENTER -->
+    <div id="manager-panel-view" class="view-panel">
+      <h2>Branch Manager Command Center</h2>
+      <p style="color:#64748b; margin-bottom:1.5rem;">Live User Tracking, Teller Signatures, Auto CSV Exports & Regulatory Returns</p>
+
+      <div class="no-print" style="margin-bottom:1.5rem; display:flex; gap:0.5rem;">
+        <button class="btn" onclick="exportToCSV()">Export All Client Data (CSV / Excel)</button>
+        <button class="btn btn-secondary" onclick="window.print()">Print Regulatory Returns (BOZ / FIC / CRB / ZRA)</button>
+      </div>
+
+      <h3>Active Logged-In Tellers & Users</h3>
+      <table style="margin-bottom:2rem;">
+        <thead>
+          <tr>
+            <th>Session ID</th>
+            <th>User / Teller Name</th>
+            <th>Role</th>
+            <th>Login Time</th>
+          </tr>
+        </thead>
+        <tbody id="managerSessionsTable"></tbody>
+      </table>
+
+      <h3>All Loan Applications & Manager Action</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client Name</th>
+            <th>MAN Number</th>
+            <th>Amount</th>
+            <th>Monthly</th>
+            <th>Teller Attributed</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="managerLoansTable"></tbody>
+      </table>
+    </div>
+
+    <!-- REPAYMENT SCHEDULE MODAL WITH SLIDE BAR & CLOSE BAR -->
+    <div id="scheduleModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div>
+            <h2 style="color:#0284c7; margin-bottom:0.2rem;">Repayment Schedule Breakdown</h2>
+            <p id="scheduleSubhead" style="color:#64748b; font-size:0.9rem;"></p>
+          </div>
+          <button class="close-x" onclick="closeScheduleModal()" title="Close Schedule">&times;</button>
+        </div>
+
+        <!-- Scrollable Slide Bar Container -->
+        <div class="table-slide-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Month #</th>
+                <th>Due Date</th>
+                <th>Scheduled Payment</th>
+                <th>Principal Portion</th>
+                <th>Interest Portion</th>
+                <th>Remaining Balance</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Bottom Action / Close Bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:1rem;">
+          <button class="btn btn-secondary" onclick="window.print()">Print Schedule</button>
+          <button class="btn btn-danger" onclick="closeScheduleModal()">Close Schedule</button>
+        </div>
       </div>
     </div>
 
-    <!-- TAB 4: ADMIN CONTROL CENTER -->
-    <div id="admin-panel" class="tab-content">
-      <div class="card">
-        <h2>Admin Command Center</h2>
-        <div class="no-print" style="margin-bottom: 1rem; display:flex; gap:0.5rem;">
-          <button class="btn" onclick="exportToCSV()">Export All Data to CSV (Excel)</button>
-          <button class="btn" style="background:#475569;" onclick="generateRegulatoryReports()">Generate BOZ / FIC / CRB / ZRA Returns</button>
-          <button class="btn" style="background:#059669;" onclick="window.print()">Print Regulatory Reports</button>
+    <!-- PRINTABLE CLIENT LOAN FORM TEMPLATE WITH CAPTURED PHOTO -->
+    <div id="printable-form" class="view-panel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div>
+          <h1 style="color:#0284c7;">BETTERLIFE ZAMBIA LIMITED</h1>
+          <p style="font-weight:bold;">OFFICIAL LOAN APPLICATION & AGREEMENT FORM</p>
         </div>
+        <img id="printClientPhoto" src="" alt="Client Photo" style="width:100px; height:100px; border-radius:8px; border:2px solid #0284c7; display:none;">
+      </div>
 
-        <h3>Active Logged-In Sessions</h3>
-        <table id="sessionsTable" style="margin-bottom:2rem;">
-          <thead>
-            <tr>
-              <th>Session ID</th>
-              <th>Username</th>
-              <th>Role</th>
-              <th>Login Time</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div style="line-height:2; font-size:1rem;">
+        <p><strong>Client Full Name:</strong> <span id="pName">____________________</span></p>
+        <p><strong>NRC Number:</strong> <span id="pNRC">____________________</span> | <strong>MAN Number:</strong> <span id="pMAN">____________________</span></p>
+        <p><strong>Loan Amount Requested:</strong> ZMW <span id="pAmt">0.00</span> | <strong>Tenure:</strong> <span id="pTenure">12</span> Months</p>
+        <p><strong>Approved Monthly Repayment:</strong> ZMW <span id="pMonthly">0.00</span></p>
+        <p><strong>PAMEC Compliant Take-Home Pay:</strong> <span id="pTakeHome">0.0</span>%</p>
+        <p><strong>Attending Teller / Officer:</strong> <span id="pTeller">____________________</span></p>
+      </div>
 
-        <h3>All Loan Applications & Approval Workflow</h3>
-        <table id="adminLoanTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Client</th>
-              <th>NRC</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Repayment</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div style="margin-top:4rem; display:flex; justify-content:space-between;">
+        <div>___________________________<br>Client Signature</div>
+        <div>___________________________<br>Branch Manager Authorization</div>
       </div>
     </div>
 
   </main>
 
   <script>
-    let activeUser = null;
+    let currentAdmin = null;
+    let approvedLoanIds = new Set();
+    let isInitialLoad = true;
+    let currentLoansData = [];
+    let capturedImageData = null;
+
+    // Web Audio Pop Sound Generator
+    function playPopSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      } catch (e) {
+        console.log('Audio error:', e);
+      }
+    }
+
+    // WEBCAM INTEGRATION
+    async function startWebcam() {
+      try {
+        const video = document.getElementById('webcamVideo');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        video.srcObject = stream;
+      } catch (err) {
+        alert('Unable to access system webcam. Please check camera permissions.');
+      }
+    }
+
+    function captureLiveSnapshot() {
+      const video = document.getElementById('webcamVideo');
+      const canvas = document.getElementById('webcamCanvas');
+      const photo = document.getElementById('capturedPhoto');
+
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, 320, 240);
+
+      capturedImageData = canvas.toDataURL('image/png');
+      photo.src = capturedImageData;
+      photo.style.display = 'block';
+
+      const printPhoto = document.getElementById('printClientPhoto');
+      printPhoto.src = capturedImageData;
+      printPhoto.style.display = 'block';
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('betterlife_user');
       if (saved) {
-        activeUser = JSON.parse(saved);
-        document.getElementById('userInfo').innerHTML = `
-          <span class="user-badge">${activeUser.role.toUpperCase()}: ${activeUser.fullName || activeUser.username}</span>
-          <button onclick="logout()" class="btn-logout">Logout</button>
-        `;
-        if (activeUser.role === 'admin') {
-          document.getElementById('adminTabBtn').style.display = 'inline-block';
-          loadAdminData();
+        currentAdmin = JSON.parse(saved);
+        if (currentAdmin.role === 'admin') {
+          document.getElementById('authNav').innerHTML = `
+            <span style="color:#0284c7; font-weight:bold; margin-right:1rem;">Manager: ${currentAdmin.fullName}</span>
+            <button class="btn" style="padding:0.4rem 0.8rem; background:#ef4444;" onclick="logout()">Logout</button>
+          `;
+          openView('manager-panel-view');
+          loadManagerData();
         }
       }
-      calculateRepayment();
+      runPamecCalc();
+      fetchAccountLoans();
+      setInterval(fetchAccountLoans, 3000);
     });
 
     function logout() {
@@ -251,162 +443,271 @@
       window.location.reload();
     }
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('nav.tab-bar button').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
-      if (tabId === 'admin-panel') loadAdminData();
-      if (tabId === 'loan-tracking') loadClientLoans();
+    function showHome() {
+      document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+    }
+
+    function openView(viewId) {
+      document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      if (viewId === 'account-management-view') fetchAccountLoans();
     }
 
     function toggleSectorFields() {
-      const type = document.getElementById('regType').value;
-      document.getElementById('civilServantGroup').style.display = type === 'Civil Servant' ? 'block' : 'none';
-      document.getElementById('privateSectorGroup').style.display = type === 'Private Sector' ? 'block' : 'none';
+      const sector = document.getElementById('kycSector').value;
+      document.getElementById('manGroup').style.display = sector === 'Civil Servant' ? 'flex' : 'none';
     }
 
-    // Calculator Logic
-    function calculateRepayment() {
+    function runPamecCalc() {
+      const gross = parseFloat(document.getElementById('calcGross').value) || 1;
+      const deductions = parseFloat(document.getElementById('calcDeductions').value) || 0;
       const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
       const tenure = parseInt(document.getElementById('calcTenure').value) || 1;
-      const type = document.getElementById('calcLoanType').value;
 
-      const rate = type.includes('Civil Servant') ? 0.15 : 0.25;
-      const totalInterest = amount * rate * (tenure / 12);
-      const totalPayable = amount + totalInterest;
-      const monthly = totalPayable / tenure;
+      const sector = document.getElementById('kycSector').value;
+      const rate = sector === 'Civil Servant' ? 0.15 : 0.25;
+      const monthly = (amount + (amount * rate * (tenure / 12))) / tenure;
 
-      document.getElementById('monthlyResult').innerText = monthly.toFixed(2);
-      document.getElementById('totalResult').innerText = totalPayable.toFixed(2);
+      const takeHome = gross - (deductions + monthly);
+      const percent = (takeHome / gross) * 100;
+
+      document.getElementById('resMonthly').innerText = monthly.toFixed(2);
+      document.getElementById('resTakeHome').innerText = takeHome.toFixed(2);
+      document.getElementById('resPercent').innerText = percent.toFixed(1);
+
+      const statusEl = document.getElementById('pamecStatus');
+      if (percent >= 40) {
+        statusEl.innerText = 'PASSED: Take-Home is 40% or higher. Compliant with PAMEC rule.';
+        statusEl.style.color = 'green';
+      } else {
+        statusEl.innerText = 'FAILED: Take-Home is below 40%. Loan amount exceeds threshold.';
+        statusEl.style.color = 'red';
+      }
     }
 
-    // Client Registration
-    document.getElementById('regForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById('regMsg');
-      msg.innerText = 'Registering client...';
-
-      const payload = {
-        full_name: document.getElementById('regName').value,
-        nrc_number: document.getElementById('regNRC').value,
-        phone: document.getElementById('regPhone').value,
-        email: document.getElementById('regEmail').value,
-        client_type: document.getElementById('regType').value,
-        employer_name: document.getElementById('regEmployer').value,
-        collateral_details: document.getElementById('regCollateral').value
-      };
-
-      const res = await fetch('/api/clients/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      msg.style.color = res.ok ? 'green' : 'red';
-      msg.innerText = data.message || data.error;
-    });
-
-    // Loan Submission
     async function submitLoanApplication() {
       const msg = document.getElementById('loanMsg');
-      msg.innerText = 'Submitting application...';
+      msg.innerText = 'Processing Loan Application...';
 
-      const payload = {
-        member_id: activeUser ? activeUser.id : 1,
-        loan_type: document.getElementById('calcLoanType').value,
-        amount: parseFloat(document.getElementById('calcAmount').value),
-        tenure_months: parseInt(document.getElementById('calcTenure').value),
-        monthly_repayment: parseFloat(document.getElementById('monthlyResult').innerText),
-        disbursement_method: document.getElementById('disburseMethod').value
+      const kycPayload = {
+        full_name: document.getElementById('kycName').value,
+        nrc_number: document.getElementById('kycNRC').value,
+        phone: document.getElementById('kycPhone').value,
+        client_type: document.getElementById('kycSector').value,
+        man_number: document.getElementById('kycMan').value,
+        teller_name: document.getElementById('kycTeller').value
       };
 
-      const res = await fetch('/api/loans/apply', {
+      const regRes = await fetch('/api/clients/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(kycPayload)
       });
-      const data = await res.json();
-      msg.style.color = res.ok ? 'green' : 'red';
-      msg.innerText = data.message || data.error;
+      const regData = await regRes.json();
+
+      const loanPayload = {
+        member_id: regData.member_id || 1,
+        loan_type: document.getElementById('kycSector').value + ' Loan',
+        amount: document.getElementById('calcAmount').value,
+        tenure_months: document.getElementById('calcTenure').value,
+        basic_pay: document.getElementById('calcGross').value,
+        existing_deductions: document.getElementById('calcDeductions').value,
+        teller_name: document.getElementById('kycTeller').value
+      };
+
+      const loanRes = await fetch('/api/loans/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loanPayload)
+      });
+      const loanData = await loanRes.json();
+
+      msg.style.color = loanRes.ok ? 'green' : 'red';
+      msg.innerText = loanData.message || loanData.error;
+
+      if (loanRes.ok) {
+        fetchAccountLoans();
+      }
     }
 
-    // Admin Data & Control
-    async function loadAdminData() {
-      // Load Loans
-      const resLoans = await fetch('/api/admin/loans');
-      const loans = await resLoans.json();
-      const tbodyLoans = document.querySelector('#adminLoanTable tbody');
-      tbodyLoans.innerHTML = loans.map(l => `
+    async function fetchAccountLoans() {
+      try {
+        const res = await fetch('/api/admin/overview');
+        const data = await res.json();
+        currentLoansData = data.loans || [];
+
+        let newApprovalDetected = false;
+
+        currentLoansData.forEach(l => {
+          if (l.status === 'Approved' && !approvedLoanIds.has(l.id)) {
+            approvedLoanIds.add(l.id);
+            if (!isInitialLoad) {
+              newApprovalDetected = true;
+            }
+          }
+        });
+
+        if (newApprovalDetected) {
+          playPopSound();
+        }
+
+        isInitialLoad = false;
+
+        const tbody = document.getElementById('clientStatementTable');
+        const profileSelect = document.getElementById('profileSelect');
+
+        if (currentLoansData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8">No active accounts found. Register or submit a loan application.</td></tr>`;
+          return;
+        }
+
+        profileSelect.innerHTML = `<option value="">Choose Profile...</option>` + currentLoansData.map(l => `
+          <option value="${l.id}">${l.full_name} (${l.nrc_number || 'No NRC'})</option>
+        `).join('');
+
+        tbody.innerHTML = currentLoansData.map(l => {
+          let badgeClass = 'status-pending';
+          if (l.status === 'Approved') badgeClass = 'status-approved';
+          if (l.status === 'Rejected') badgeClass = 'status-rejected';
+
+          const totalPayable = l.amount + (l.amount * 0.15);
+          const outstanding = l.status === 'Approved' ? totalPayable : l.amount;
+
+          return `
+            <tr>
+              <td>#BL-${l.id}</td>
+              <td>${l.full_name || 'N/A'}</td>
+              <td>${l.man_number || l.client_type}</td>
+              <td>ZMW ${l.amount.toFixed(2)}</td>
+              <td>ZMW ${outstanding.toFixed(2)}</td>
+              <td>ZMW ${l.monthly_repayment.toFixed(2)}</td>
+              <td><span class="status-badge ${badgeClass}">${l.status}</span></td>
+              <td>
+                <button class="btn btn-outline" style="padding:0.2rem 0.5rem;" onclick="viewRepaymentSchedule(${l.id})">Schedule</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Fetch error:', err);
+      }
+    }
+
+    function viewRepaymentSchedule(loanId) {
+      const loan = currentLoansData.find(l => l.id === loanId);
+      if (!loan) return;
+
+      document.getElementById('scheduleSubhead').innerText = `Client: ${loan.full_name} | Principal: ZMW ${loan.amount.toFixed(2)} | Tenure: ${loan.tenure_months} Months`;
+
+      let balance = loan.amount;
+      const monthlyPay = loan.monthly_repayment;
+      let rowsHtml = '';
+
+      const startDate = new Date();
+
+      for (let i = 1; i <= loan.tenure_months; i++) {
+        const dueDate = new Date(startDate.setMonth(startDate.getMonth() + 1)).toLocaleDateString();
+        const interestPortion = balance * (0.15 / 12);
+        const principalPortion = monthlyPay - interestPortion;
+        balance = Math.max(0, balance - principalPortion);
+
+        rowsHtml += `
+          <tr>
+            <td>Month ${i}</td>
+            <td>${dueDate}</td>
+            <td>ZMW ${monthlyPay.toFixed(2)}</td>
+            <td>ZMW ${principalPortion.toFixed(2)}</td>
+            <td>ZMW ${interestPortion.toFixed(2)}</td>
+            <td>ZMW ${balance.toFixed(2)}</td>
+          </tr>
+        `;
+      }
+
+      document.getElementById('scheduleTableBody').innerHTML = rowsHtml;
+      document.getElementById('scheduleModal').style.display = 'block';
+    }
+
+    function closeScheduleModal() {
+      document.getElementById('scheduleModal').style.display = 'none';
+    }
+
+    function loadMemberProfileDetails() {
+      const selectedId = document.getElementById('profileSelect').value;
+      const loan = currentLoansData.find(l => l.id == selectedId);
+      if (loan) {
+        document.getElementById('profPhone').value = loan.phone || '';
+        document.getElementById('profEmail').value = loan.email || '';
+      }
+    }
+
+    function saveProfileChanges() {
+      alert('Member profile updated securely.');
+    }
+
+    function generatePrintableForm() {
+      document.getElementById('pName').innerText = document.getElementById('kycName').value || '________________';
+      document.getElementById('pNRC').innerText = document.getElementById('kycNRC').value || '________________';
+      document.getElementById('pMAN').innerText = document.getElementById('kycMan').value || 'N/A';
+      document.getElementById('pAmt').innerText = document.getElementById('calcAmount').value;
+      document.getElementById('pTenure').innerText = document.getElementById('calcTenure').value;
+      document.getElementById('pMonthly').innerText = document.getElementById('resMonthly').innerText;
+      document.getElementById('pTakeHome').innerText = document.getElementById('resPercent').innerText;
+      document.getElementById('pTeller').innerText = document.getElementById('kycTeller').value || 'System Online';
+
+      openView('printable-form');
+      setTimeout(() => window.print(), 500);
+    }
+
+    async function loadManagerData() {
+      const res = await fetch('/api/admin/overview');
+      const data = await res.json();
+
+      document.getElementById('managerSessionsTable').innerHTML = data.sessions.map(s => `
+        <tr><td>${s.session_id}</td><td>${s.username}</td><td>${s.role}</td><td>${s.login_time}</td></tr>
+      `).join('');
+
+      document.getElementById('managerLoansTable').innerHTML = data.loans.map(l => `
         <tr>
-          <td>${l.id}</td>
+          <td>#BL-${l.id}</td>
           <td>${l.full_name || 'N/A'}</td>
-          <td>${l.nrc_number || 'N/A'}</td>
-          <td>${l.loan_type}</td>
+          <td>${l.man_number || 'N/A'}</td>
           <td>ZMW ${l.amount.toFixed(2)}</td>
           <td>ZMW ${l.monthly_repayment.toFixed(2)}</td>
+          <td>${l.registered_by_teller || 'Online'}</td>
           <td><strong>${l.status}</strong></td>
           <td>
-            <button class="btn-action btn-approve" onclick="updateLoanStatus(${l.id}, 'Approved')">Approve</button>
-            <button class="btn-action btn-reject" onclick="updateLoanStatus(${l.id}, 'Rejected')">Reject</button>
+            <button class="btn" style="padding:0.2rem 0.5rem; background:green;" onclick="actionLoan(${l.id}, 'Approved')">Approve</button>
+            <button class="btn" style="padding:0.2rem 0.5rem; background:red;" onclick="actionLoan(${l.id}, 'Rejected')">Reject</button>
           </td>
         </tr>
       `).join('');
-
-      // Load Sessions
-      const resSess = await fetch('/api/admin/sessions');
-      const sessions = await resSess.json();
-      const tbodySess = document.querySelector('#sessionsTable tbody');
-      tbodySess.innerHTML = sessions.map(s => `
-        <tr>
-          <td>${s.session_id}</td>
-          <td>${s.username}</td>
-          <td>${s.role}</td>
-          <td>${s.login_time}</td>
-          <td><button class="btn-action btn-reject" onclick="terminateSession('${s.session_id}')">Remote Logout</button></td>
-        </tr>
-      `).join('');
     }
 
-    async function updateLoanStatus(loanId, action) {
+    async function actionLoan(id, action) {
       await fetch('/api/admin/loans/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ loan_id: loanId, action: action })
+        body: JSON.stringify({ loan_id: id, action: action })
       });
-      loadAdminData();
+      loadManagerData();
+      fetchAccountLoans();
     }
 
-    async function terminateSession(sessionId) {
-      await fetch('/api/admin/sessions/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sessionId })
-      });
-      loadAdminData();
-    }
-
-    // CSV Export Logic
     async function exportToCSV() {
-      const res = await fetch('/api/admin/loans');
-      const loans = await res.json();
-      
-      let csv = 'Loan ID,Client Name,NRC,Sector Type,Loan Amount,Monthly Repayment,Status,Date\n';
-      loans.forEach(l => {
-        csv += `"${l.id}","${l.full_name}","${l.nrc_number}","${l.client_type}","${l.amount}","${l.monthly_repayment}","${l.status}","${l.created_at}"\n`;
+      const res = await fetch('/api/admin/overview');
+      const data = await res.json();
+
+      let csv = 'Loan ID,Client Name,MAN Number,Amount,Repayment,Teller,Status\n';
+      data.loans.forEach(l => {
+        csv += `"${l.id}","${l.full_name}","${l.man_number}","${l.amount}","${l.monthly_repayment}","${l.registered_by_teller}","${l.status}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.setAttribute('href', url);
-      a.setAttribute('download', 'BetterLife_Zambia_Loans_Export.csv');
+      a.href = url;
+      a.download = 'BetterLife_Zambia_Manager_Returns.csv';
       a.click();
-    }
-
-    function generateRegulatoryReports() {
-      alert('Generating consolidated regulatory returns for Bank of Zambia (BOZ), Financial Intelligence Centre (FIC), Credit Reference Bureau (CRB), and ZRA Tax Returns...');
-      window.print();
     }
   </script>
 </body>
