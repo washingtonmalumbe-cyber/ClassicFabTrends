@@ -19,30 +19,69 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-slate); color: var(--text-main); }
 
-    /* Header Navigation */
-    header { background: var(--bg-white); padding: 0.8rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--brand-green); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-    .brand-logo-container { display: flex; align-items: center; text-decoration: none; cursor: pointer; }
+    /* Top Navigation Header: Styled to expand the top-left logo */
+    header { 
+      background: var(--bg-white); 
+      padding: 0.8rem 2rem; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      border-bottom: 5px solid var(--brand-green); 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+      min-height: 110px;
+    }
+
+    .brand-logo-container { 
+      display: flex; 
+      align-items: center; 
+      text-decoration: none; 
+      cursor: pointer;
+      max-width: 65%;
+    }
     
-    /* MODIFICATION 1: Enlarged Header Logo */
-    .brand-logo-img { height: 85px; width: auto; object-fit: contain; }
+    /* Top Left Logo Styling: Fills the entire top header white space */
+    .brand-logo-img { 
+      height: 95px; 
+      max-height: 100px;
+      width: auto; 
+      object-fit: contain; 
+      object-position: left center;
+      display: block;
+    }
     
-    .login-link { color: var(--brand-blue); font-weight: 700; text-decoration: none; font-size: 1rem; border: 2px solid var(--brand-blue); padding: 0.5rem 1.2rem; border-radius: 6px; transition: all 0.2s ease-in-out; }
-    .login-link:hover { background: var(--brand-blue); color: var(--bg-white); }
+    .login-link { 
+      color: var(--brand-blue); 
+      font-weight: 800; 
+      text-decoration: none; 
+      font-size: 1.05rem; 
+      border: 2px solid var(--brand-blue); 
+      padding: 0.6rem 1.4rem; 
+      border-radius: 8px; 
+      transition: all 0.2s ease-in-out; 
+      background: var(--bg-white);
+    }
+    .login-link:hover { 
+      background: var(--brand-blue); 
+      color: var(--bg-white); 
+    }
 
     /* Hero Banner */
-    .hero { background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%); color: var(--bg-white); text-align: center; padding: 4rem 1rem; border-bottom: 5px solid var(--brand-green); }
+    .hero { 
+      background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%); 
+      color: var(--bg-white); 
+      text-align: center; 
+      padding: 3.5rem 1rem 4rem 1rem; 
+      border-bottom: 5px solid var(--brand-green); 
+    }
     
-    /* MODIFICATION 2: Significantly Enlarged Hero Logo */
-    .hero-logo { height: 130px; margin-bottom: 1.2rem; background: var(--bg-white); padding: 0.6rem 1.5rem; border-radius: 10px; box-shadow: 0 6px 12px rgba(0,0,0,0.15); object-fit: contain; }
-    
-    .hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
-    .hero p { font-size: 1.2rem; opacity: 0.95; font-weight: 500; }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+    .hero p { font-size: 1.15rem; opacity: 0.95; font-weight: 500; }
 
     /* Card Layout Container */
-    .main-container { max-width: 1150px; margin: -3rem auto 3rem auto; padding: 0 1rem; position: relative; z-index: 10; }
+    .main-container { max-width: 1150px; margin: -2.8rem auto 3rem auto; padding: 0 1rem; position: relative; z-index: 10; }
     .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem; }
     .nav-card { background: var(--bg-white); border: 2px solid var(--card-border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.2s ease-in-out; }
-    .nav-card:hover { transform: translateY(-4px); border-color: var(--brand-green); box-shadow: 0 15px 25px -3px rgba(114, 191, 68, 0.15); }
+    .nav-card:hover { transform: translateY(-4px); border-color: var(--brand-green); box-shadow: 0 15px 25px -3px rgba(114, 191, 68, 0.18); }
     .nav-card h2 { color: var(--brand-blue); font-size: 1.4rem; margin-bottom: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.6rem; }
     .nav-card h2::before { content: ''; display: inline-block; width: 14px; height: 14px; background: var(--brand-green); border-radius: 50%; }
     .nav-card p { color: #64748b; font-size: 0.95rem; line-height: 1.6; }
@@ -79,13 +118,13 @@
     .status-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
     .status-rejected { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-    /* Webcam Section Styling */
+    /* Webcam Box Styling */
     .webcam-container { display: flex; flex-direction: column; align-items: center; background: var(--brand-blue-dark); padding: 1.5rem; border-radius: 8px; color: var(--bg-white); border: 2px solid var(--brand-green); }
     #webcamVideo { width: 100%; max-width: 320px; height: 240px; background: #000; border-radius: 6px; object-fit: cover; }
     #webcamCanvas { display: none; }
     #capturedPhoto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--brand-green); margin-top: 0.8rem; display: none; }
 
-    /* Modal */
+    /* Modal Styling */
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(10, 25, 47, 0.75); backdrop-filter: blur(4px); }
     .modal-content { background: var(--bg-white); margin: 3% auto; padding: 2.5rem; border-radius: 12px; width: 90%; max-width: 850px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; border-top: 8px solid var(--brand-green); }
     
@@ -108,19 +147,18 @@
 </head>
 <body>
 
-  <!-- Header Navigation with Official Brand Logo[cite: 3] -->
+  <!-- Top Navigation Header with Logo Styled to Fill Top Left Space -->
   <header>
-    <a onclick="showHome()" class="brand-logo-container">
-      <img src="/logo.jpg" alt="BetterLife Capital Limited" class="brand-logo-img">
+    <a onclick="showHome()" class="brand-logo-container" title="BetterLife Capital Limited">
+      <img src="/logo.jpg" alt="BetterLife Capital Limited Logo" class="brand-logo-img">
     </a>
     <div id="authNav">
       <a href="/login.html" class="login-link">Portal Login</a>
     </div>
   </header>
 
-  <!-- Hero Banner with Logo Branding -->
+  <!-- Hero Banner -->
   <section class="hero">
-    <img src="/logo.jpg" alt="BetterLife Capital Logo" class="hero-logo">
     <h1>Empowering Zambian Futures</h1>
     <p>Accessible financial planning, personal loans, and micro-investments.</p>
   </section>
@@ -355,12 +393,11 @@
       </div>
     </div>
 
-    <!-- OFFICIAL PRINTABLE AGREEMENT FORM WITH ENLARGED LOGO[cite: 3] -->
+    <!-- OFFICIAL PRINTABLE AGREEMENT FORM WITH LOGO HEADER -->
     <div id="printable-form" class="view-panel" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:start; border-bottom:4px solid var(--brand-green); padding-bottom:1.2rem; margin-bottom:1.5rem;">
         
-        <!-- MODIFICATION 3: Enlarged printable header logo -->
-        <img src="/logo.jpg" alt="BetterLife Capital Logo" style="width:110px; height:auto; object-fit:contain;">
+        <img src="/logo.jpg" alt="BetterLife Capital Logo" style="width:140px; height:auto; object-fit:contain;">
         
         <div style="text-align:right; font-size:0.85rem; line-height:1.4;">
           <strong>BetterLife Capital Limited</strong><br>
@@ -388,12 +425,11 @@
       </div>
     </div>
     
-    <!-- REGULATORY RETURNS PRINT VIEW (ENLARGED LOGO[cite: 3]) -->
+    <!-- REGULATORY RETURNS PRINT VIEW -->
     <div id="regulatory-returns-view" class="view-panel" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:start; border-bottom:4px solid var(--brand-green); padding-bottom:1.2rem; margin-bottom:1.5rem;">
             
-            <!-- MODIFICATION 4: Enlarged printable return header logo -->
-            <img src="/logo.jpg" alt="BetterLife Capital Logo" style="width:90px; height:auto; object-fit:contain;">
+            <img src="/logo.jpg" alt="BetterLife Capital Logo" style="width:120px; height:auto; object-fit:contain;">
             
             <div style="text-align:right; font-size:0.85rem;">
               <strong>BETTERLIFE CAPITAL LIMITED</strong><br>
@@ -752,11 +788,9 @@
       fetchAccountLoans();
     }
     
-    // Toggle Print View for Regulatory Returns[cite: 3]
     async function toggleRegulatoryReturnsPrint() {
         const returnsPanel = document.getElementById('regulatory-returns-view');
         
-        // Fetch fresh data
         const res = await fetch('/api/admin/overview');
         const data = await res.json();
         const loans = data.loans || [];
@@ -773,12 +807,10 @@
             </tr>
         `).join('');
 
-        // Temporarily activate the printable returns view
         document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
         returnsPanel.classList.add('active');
         returnsPanel.style.display = 'block';
         
-        // Print and return to manager view
         setTimeout(() => {
             window.print();
             openView('manager-panel-view');
