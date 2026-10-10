@@ -97,6 +97,42 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Authentication Endpoint (Master Credentials & Database Fallback)
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required.' });
+  }
+
+  // Master Credentials Check
+  if (username === 'Nagto' && password === 'Minato@86') {
+    return res.status(200).json({
+      success: true,
+      message: 'Master login successful.',
+      user: { username: 'Nagto', role: 'admin' }
+    });
+  }
+
+  // Fallback to Database check for other users
+  const query = 'SELECT * FROM customers WHERE email = ? OR full_name = ?';
+  db.get(query, [username, username], (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error during authentication.' });
+    }
+
+    if (user) {
+      return res.status(200).json({
+        success: true,
+        message: 'Login successful.',
+        user: { username: user.full_name, role: 'user' }
+      });
+    }
+
+    return res.status(401).json({ error: 'Invalid username or password.' });
+  });
+});
+
 // Product API Endpoints
 app.get('/api/products', (req, res) => {
   const query = 'SELECT * FROM products ORDER BY created_at DESC';
