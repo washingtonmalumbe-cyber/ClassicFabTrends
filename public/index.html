@@ -6,80 +6,90 @@
   <title>BetterLife Capital Limited</title>
   <style>
     :root {
-      --brand-blue: #0284c7;
-      --brand-dark: #024a70;
-      --hero-bg: #033659;
+      --brand-blue: #1E2B70;
+      --brand-blue-dark: #121B4E;
+      --brand-green: #72BF44;
+      --brand-green-dark: #5AA133;
+      --bg-white: #ffffff;
       --bg-slate: #f8fafc;
       --card-border: #e2e8f0;
       --text-main: #0f172a;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-slate); color: var(--text-main); }
 
-    /* Header Bar */
-    header { background: #ffffff; padding: 1.2rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); }
-    .brand-title { font-size: 1.6rem; font-weight: 800; color: var(--brand-blue); text-decoration: none; cursor: pointer; }
-    .login-link { color: var(--brand-blue); font-weight: 600; text-decoration: none; font-size: 1rem; cursor: pointer; }
+    /* Header Navigation */
+    header { background: var(--bg-white); padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--brand-green); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .brand-logo-container { display: flex; align-items: center; gap: 0.8rem; cursor: pointer; text-decoration: none; }
+    .brand-logo-img { height: 50px; width: auto; object-fit: contain; }
+    .login-link { color: var(--brand-blue); font-weight: 700; text-decoration: none; font-size: 1rem; border: 1.5px solid var(--brand-blue); padding: 0.4rem 1rem; border-radius: 6px; transition: all 0.2s; }
+    .login-link:hover { background: var(--brand-blue); color: var(--bg-white); }
 
-    /* Hero Banner */
-    .hero { background: linear-gradient(180deg, #024a70 0%, #032b45 100%); color: #ffffff; text-align: center; padding: 3.5rem 1rem; }
-    .hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .hero p { font-size: 1.05rem; opacity: 0.9; }
+    /* Hero Banner with Brand Colors */
+    .hero { background: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-blue-dark) 100%); color: var(--bg-white); text-align: center; padding: 3rem 1rem; border-bottom: 4px solid var(--brand-green); }
+    .hero-logo { height: 75px; margin-bottom: 1rem; background: var(--bg-white); padding: 0.5rem 1rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .hero h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+    .hero p { font-size: 1.1rem; opacity: 0.9; font-weight: 500; }
 
     /* Card Layout Container */
     .main-container { max-width: 1150px; margin: -2.5rem auto 3rem auto; padding: 0 1rem; position: relative; z-index: 10; }
     .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .nav-card { background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-    .nav-card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1); }
-    .nav-card h2 { color: var(--brand-blue); font-size: 1.3rem; margin-bottom: 0.8rem; font-weight: 700; }
+    .nav-card { background: var(--bg-white); border: 2px solid var(--card-border); border-radius: 12px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+    .nav-card:hover { transform: translateY(-3px); border-color: var(--brand-green); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1); }
+    .nav-card h2 { color: var(--brand-blue); font-size: 1.4rem; margin-bottom: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-card h2::before { content: ''; display: inline-block; width: 12px; height: 12px; background: var(--brand-green); border-radius: 50%; }
     .nav-card p { color: #64748b; font-size: 0.95rem; line-height: 1.5; }
 
-    /* Action Views */
-    .view-panel { display: none; background: #ffffff; border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    /* Action Panels */
+    .view-panel { display: none; background: var(--bg-white); border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
     .view-panel.active { display: block; }
+    .view-panel h2 { color: var(--brand-blue); border-bottom: 2px solid var(--brand-green); padding-bottom: 0.5rem; margin-bottom: 1rem; }
     
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
-    .form-group label { font-size: 0.85rem; font-weight: 600; color: #334155; }
-    .form-group input, .form-group select { padding: 0.6rem; border: 1px solid var(--card-border); border-radius: 6px; font-size: 0.95rem; }
+    .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--brand-blue); }
+    .form-group input, .form-group select { padding: 0.65rem; border: 1.5px solid var(--card-border); border-radius: 6px; font-size: 0.95rem; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--brand-blue); }
     
-    .btn { background: var(--brand-blue); color: #ffffff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size:0.85rem; }
-    .btn:hover { background: var(--brand-dark); }
-    .btn-secondary { background: #64748b; }
-    .btn-outline { background: transparent; color: var(--brand-blue); border: 1px solid var(--brand-blue); }
-    .btn-success { background: #16a34a; }
-    .btn-danger { background: #ef4444; }
+    .btn { background: var(--brand-blue); color: var(--bg-white); border: none; padding: 0.65rem 1.3rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+    .btn:hover { background: var(--brand-blue-dark); }
+    .btn-green { background: var(--brand-green); color: var(--bg-white); }
+    .btn-green:hover { background: var(--brand-green-dark); }
+    .btn-secondary { background: #64748b; color: var(--bg-white); }
+    .btn-outline { background: transparent; color: var(--brand-blue); border: 1.5px solid var(--brand-blue); }
+    .btn-danger { background: #ef4444; color: var(--bg-white); }
     
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
     table th, table td { border: 1px solid var(--card-border); padding: 0.75rem; text-align: left; }
-    table th { background: #f1f5f9; position: sticky; top: 0; z-index: 5; }
+    table th { background: var(--brand-blue); color: var(--bg-white); position: sticky; top: 0; z-index: 5; }
 
-    .pamec-box { background: #f0f9ff; border: 1px dashed var(--brand-blue); padding: 1rem; border-radius: 6px; margin: 1rem 0; }
+    .pamec-box { background: #f0fdf4; border: 1.5px dashed var(--brand-green); padding: 1.2rem; border-radius: 8px; margin: 1rem 0; }
+    .pamec-box h4 { color: var(--brand-blue); margin-bottom: 0.5rem; }
 
     .status-badge { padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: bold; display: inline-block; }
     .status-approved { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
     .status-pending { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
     .status-rejected { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-    /* Webcam Box Styling */
-    .webcam-container { display: flex; flex-direction: column; align-items: center; background: #0f172a; padding: 1rem; border-radius: 8px; color: #fff; }
+    /* Webcam Section Styling */
+    .webcam-container { display: flex; flex-direction: column; align-items: center; background: var(--brand-blue-dark); padding: 1.2rem; border-radius: 8px; color: var(--bg-white); border: 2px solid var(--brand-green); }
     #webcamVideo { width: 100%; max-width: 320px; height: 240px; background: #000; border-radius: 6px; object-fit: cover; }
     #webcamCanvas { display: none; }
-    #capturedPhoto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand-blue); margin-top: 0.5rem; display: none; }
+    #capturedPhoto { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--brand-green); margin-top: 0.5rem; display: none; }
 
-    /* Repayment Schedule Modal & Slide Bar */
-    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); }
-    .modal-content { background: #fff; margin: 3% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 850px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; }
+    /* Repayment Schedule Modal */
+    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(10, 25, 47, 0.75); backdrop-filter: blur(4px); }
+    .modal-content { background: var(--bg-white); margin: 3% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 850px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative; border-top: 6px solid var(--brand-green); }
     
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 1rem; margin-bottom: 1rem; }
     .close-x { font-size: 2rem; font-weight: bold; color: #64748b; cursor: pointer; line-height: 1; border: none; background: transparent; }
     .close-x:hover { color: #ef4444; }
 
-    /* Scrollable Slide Bar Container */
     .table-slide-container { max-height: 380px; overflow-y: auto; border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 1.5rem; }
     .table-slide-container::-webkit-scrollbar { width: 8px; }
     .table-slide-container::-webkit-scrollbar-track { background: #f1f5f9; }
-    .table-slide-container::-webkit-scrollbar-thumb { background: var(--brand-blue); border-radius: 4px; }
+    .table-slide-container::-webkit-scrollbar-thumb { background: var(--brand-green); border-radius: 4px; }
 
     @media print {
       header, .hero, .cards-grid, .no-print, .btn { display: none !important; }
@@ -90,14 +100,19 @@
 </head>
 <body>
 
+  <!-- Top Navigation with Official Brand Logo -->
   <header>
-    <a onclick="showHome()" class="brand-title">BetterLife Capital Limited</a>
+    <a onclick="showHome()" class="brand-logo-container">
+      <img src="/logo.jpg" alt="BetterLife Capital Limited" class="brand-logo-img" onerror="this.src='https://i.ibb.co/L8BkxqX/Better-Life-Logo.jpg'">
+    </a>
     <div id="authNav">
-      <a href="/login.html" class="login-link">Login</a>
+      <a href="/login.html" class="login-link">Portal Login</a>
     </div>
   </header>
 
+  <!-- Hero Banner with Logo Branding -->
   <section class="hero">
+    <img src="/logo.jpg" alt="BetterLife Capital Logo" class="hero-logo" onerror="this.style.display='none'">
     <h1>Empowering Zambian Futures</h1>
     <p>Accessible financial planning, personal loans, and micro-investments.</p>
   </section>
@@ -119,14 +134,14 @@
     <!-- VIEW 1: LOAN SERVICES PORTAL -->
     <div id="loan-services-view" class="view-panel">
       <h2>Loan Services Portal</h2>
-      <p style="color:#64748b; margin-bottom:1.5rem;">KYC Registration, Webcam Live Photo Capture, NRC Document Upload & PAMEC 40% Calculation</p>
+      <p style="color:#64748b; margin-bottom:1.5rem;">KYC Registration, Live Photo Capture, NRC Upload & PAMEC 40% Calculation</p>
       
-      <h3>Step 1: Client Registration & Identification Capture</h3>
+      <h3>Step 1: Client Registration & KYC Identification</h3>
       <form id="kycForm" style="margin-bottom:2rem;">
         <div class="form-grid">
           <div class="form-group">
             <label>Full Name</label>
-            <input type="text" id="kycName" required placeholder="e.g. Bwalya Phiri">
+            <input type="text" id="kycName" required placeholder="e.g. Chileshe Mulenga">
           </div>
           <div class="form-group">
             <label>NRC Number</label>
@@ -157,21 +172,21 @@
           </div>
         </div>
 
-        <!-- WEBCAM LIVE CAPTURE BOX -->
+        <!-- WEBCAM LIVE SNAPSHOT CAPTURE -->
         <div class="webcam-container">
-          <h4 style="margin-bottom:0.5rem;">Client Live Passport Photo Capture</h4>
+          <h4 style="margin-bottom:0.5rem; color:#ffffff;">Client Live Passport Photo Capture</h4>
           <video id="webcamVideo" autoplay playsinline></video>
           <canvas id="webcamCanvas" width="320" height="240"></canvas>
           <img id="capturedPhoto" alt="Captured Client Photo">
           
           <div style="display:flex; gap:0.5rem; margin-top:0.8rem;">
-            <button type="button" class="btn btn-success" onclick="startWebcam()">Start Camera</button>
+            <button type="button" class="btn btn-green" onclick="startWebcam()">Start Camera</button>
             <button type="button" class="btn" onclick="captureLiveSnapshot()">Capture Snapshot</button>
           </div>
         </div>
       </form>
 
-      <h3>Step 2: Loan Calculator & PAMEC 40% Affordability Rule</h3>
+      <h3>Step 2: Loan Calculator & PAMEC 40% Take-Home Validation</h3>
       <div class="form-grid">
         <div class="form-group">
           <label>Basic / Gross Salary (ZMW)</label>
@@ -192,14 +207,14 @@
       </div>
 
       <div class="pamec-box">
-        <h4>PAMEC 40% Take-Home Rule Status</h4>
+        <h4>PAMEC 40% Take-Home Rule Assessment</h4>
         <p>New Monthly Loan Repayment: <strong>ZMW <span id="resMonthly">0.00</span></strong></p>
         <p>Projected Net Take-Home Pay: <strong>ZMW <span id="resTakeHome">0.00</span> (<span id="resPercent">0.0</span>%)</strong></p>
-        <p id="pamecStatus" style="font-weight:bold; margin-top:0.5rem; color:green;"></p>
+        <p id="pamecStatus" style="font-weight:bold; margin-top:0.5rem; color:var(--brand-green-dark);"></p>
       </div>
 
       <div style="display:flex; gap:1rem;">
-        <button class="btn" onclick="submitLoanApplication()">Submit Loan for Approval</button>
+        <button class="btn btn-green" onclick="submitLoanApplication()">Submit Loan for Approval</button>
         <button class="btn btn-secondary" onclick="generatePrintableForm()">Generate Client Loan Form</button>
       </div>
       <div id="loanMsg" style="margin-top:1rem; font-weight:bold;"></div>
@@ -211,7 +226,7 @@
       <p style="color:#64748b; margin-bottom:1.5rem;">Track active balances, review repayment schedules, manage member profiles, and print loan statements.</p>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;" class="no-print">
-        <h3>Active Loan Balances & Accounts</h3>
+        <h3 style="color:var(--brand-blue);">Active Loan Balances & Accounts</h3>
         <button class="btn btn-secondary" onclick="window.print()">Print Official Loan Statement</button>
       </div>
 
@@ -233,9 +248,9 @@
         </tbody>
       </table>
 
-      <!-- Profile Management Section -->
-      <h3 style="margin-top:2.5rem; margin-bottom:1rem;" class="no-print">Manage Member Profile Securely</h3>
-      <div class="form-grid no-print" style="background:#f1f5f9; padding:1.5rem; border-radius:8px;">
+      <!-- Member Profile Management -->
+      <h3 style="margin-top:2.5rem; margin-bottom:1rem; color:var(--brand-blue);" class="no-print">Manage Member Profile Securely</h3>
+      <div class="form-grid no-print" style="background:#f1f5f9; padding:1.5rem; border-radius:8px; border:1px solid var(--card-border);">
         <div class="form-group">
           <label>Select Member</label>
           <select id="profileSelect" onchange="loadMemberProfileDetails()">
@@ -252,7 +267,7 @@
         </div>
         <div class="form-group">
           <label>Action</label>
-          <button class="btn" onclick="saveProfileChanges()">Save Profile Updates</button>
+          <button class="btn btn-green" onclick="saveProfileChanges()">Save Profile Updates</button>
         </div>
       </div>
     </div>
@@ -263,11 +278,11 @@
       <p style="color:#64748b; margin-bottom:1.5rem;">Live User Tracking, Teller Signatures, Auto CSV Exports & Regulatory Returns</p>
 
       <div class="no-print" style="margin-bottom:1.5rem; display:flex; gap:0.5rem;">
-        <button class="btn" onclick="exportToCSV()">Export All Client Data (CSV / Excel)</button>
+        <button class="btn btn-green" onclick="exportToCSV()">Export All Client Data (CSV / Excel)</button>
         <button class="btn btn-secondary" onclick="window.print()">Print Regulatory Returns (BOZ / FIC / CRB / ZRA)</button>
       </div>
 
-      <h3>Active Logged-In Tellers & Users</h3>
+      <h3 style="color:var(--brand-blue); margin-bottom:0.5rem;">Active Logged-In Tellers & Sessions</h3>
       <table style="margin-bottom:2rem;">
         <thead>
           <tr>
@@ -280,7 +295,7 @@
         <tbody id="managerSessionsTable"></tbody>
       </table>
 
-      <h3>All Loan Applications & Manager Action</h3>
+      <h3 style="color:var(--brand-blue); margin-bottom:0.5rem;">All Loan Applications & Manager Actions</h3>
       <table>
         <thead>
           <tr>
@@ -298,18 +313,17 @@
       </table>
     </div>
 
-    <!-- REPAYMENT SCHEDULE MODAL WITH SLIDE BAR & CLOSE BAR -->
+    <!-- REPAYMENT SCHEDULE MODAL WITH SLIDE BAR -->
     <div id="scheduleModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
           <div>
-            <h2 style="color:#0284c7; margin-bottom:0.2rem;">Repayment Schedule Breakdown</h2>
+            <h2 style="color:var(--brand-blue); margin-bottom:0.2rem;">Repayment Schedule Breakdown</h2>
             <p id="scheduleSubhead" style="color:#64748b; font-size:0.9rem;"></p>
           </div>
           <button class="close-x" onclick="closeScheduleModal()" title="Close Schedule">&times;</button>
         </div>
 
-        <!-- Scrollable Slide Bar Container -->
         <div class="table-slide-container">
           <table>
             <thead>
@@ -326,7 +340,6 @@
           </table>
         </div>
 
-        <!-- Bottom Action / Close Bar -->
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:1rem;">
           <button class="btn btn-secondary" onclick="window.print()">Print Schedule</button>
           <button class="btn btn-danger" onclick="closeScheduleModal()">Close Schedule</button>
@@ -334,17 +347,16 @@
       </div>
     </div>
 
-    <!-- PRINTABLE CLIENT LOAN FORM TEMPLATE WITH CAPTURED PHOTO -->
+    <!-- OFFICIAL PRINTABLE AGREEMENT FORM WITH LOGO & BRAND COLOURS -->
     <div id="printable-form" class="view-panel" style="display:none;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <div>
-          <h1 style="color:#0284c7;">BETTERLIFE CAPITAL LIMITED</h1>
-          <p style="font-weight:bold;">OFFICIAL LOAN APPLICATION & AGREEMENT FORM</p>
-        </div>
-        <img id="printClientPhoto" src="" alt="Client Photo" style="width:100px; height:100px; border-radius:8px; border:2px solid #0284c7; display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid var(--brand-green); padding-bottom:1rem; margin-bottom:1.5rem;">
+        <img src="/logo.jpg" alt="BetterLife Capital Logo" style="height:65px; width:auto;">
+        <img id="printClientPhoto" src="" alt="Client Photo" style="width:90px; height:90px; border-radius:8px; border:2px solid var(--brand-blue); display:none;">
       </div>
 
-      <div style="line-height:2; font-size:1rem;">
+      <h2 style="text-align:center; color:var(--brand-blue); margin-bottom:1.5rem;">OFFICIAL LOAN APPLICATION & AGREEMENT FORM</h2>
+
+      <div style="line-height:2.2; font-size:1rem; color:#0f172a;">
         <p><strong>Client Full Name:</strong> <span id="pName">____________________</span></p>
         <p><strong>NRC Number:</strong> <span id="pNRC">____________________</span> | <strong>MAN Number:</strong> <span id="pMAN">____________________</span></p>
         <p><strong>Loan Amount Requested:</strong> ZMW <span id="pAmt">0.00</span> | <strong>Tenure:</strong> <span id="pTenure">12</span> Months</p>
@@ -354,8 +366,8 @@
       </div>
 
       <div style="margin-top:4rem; display:flex; justify-content:space-between;">
-        <div>___________________________<br>Client Signature</div>
-        <div>___________________________<br>Branch Manager Authorization</div>
+        <div>___________________________<br><strong>Client Signature</strong></div>
+        <div>___________________________<br><strong>Branch Manager Authorization</strong></div>
       </div>
     </div>
 
@@ -426,8 +438,8 @@
         currentAdmin = JSON.parse(saved);
         if (currentAdmin.role === 'admin') {
           document.getElementById('authNav').innerHTML = `
-            <span style="color:#0284c7; font-weight:bold; margin-right:1rem;">Manager: ${currentAdmin.fullName}</span>
-            <button class="btn" style="padding:0.4rem 0.8rem; background:#ef4444;" onclick="logout()">Logout</button>
+            <span style="color:var(--brand-blue); font-weight:bold; margin-right:1rem;">Manager: ${currentAdmin.fullName}</span>
+            <button class="btn btn-danger" style="padding:0.4rem 0.8rem;" onclick="logout()">Logout</button>
           `;
           openView('manager-panel-view');
           loadManagerData();
@@ -478,10 +490,10 @@
       const statusEl = document.getElementById('pamecStatus');
       if (percent >= 40) {
         statusEl.innerText = 'PASSED: Take-Home is 40% or higher. Compliant with PAMEC rule.';
-        statusEl.style.color = 'green';
+        statusEl.style.color = 'var(--brand-green-dark)';
       } else {
         statusEl.innerText = 'FAILED: Take-Home is below 40%. Loan amount exceeds threshold.';
-        statusEl.style.color = 'red';
+        statusEl.style.color = '#dc2626';
       }
     }
 
@@ -676,8 +688,8 @@
           <td>${l.registered_by_teller || 'Online'}</td>
           <td><strong>${l.status}</strong></td>
           <td>
-            <button class="btn" style="padding:0.2rem 0.5rem; background:green;" onclick="actionLoan(${l.id}, 'Approved')">Approve</button>
-            <button class="btn" style="padding:0.2rem 0.5rem; background:red;" onclick="actionLoan(${l.id}, 'Rejected')">Reject</button>
+            <button class="btn btn-green" style="padding:0.2rem 0.5rem;" onclick="actionLoan(${l.id}, 'Approved')">Approve</button>
+            <button class="btn btn-danger" style="padding:0.2rem 0.5rem;" onclick="actionLoan(${l.id}, 'Rejected')">Reject</button>
           </td>
         </tr>
       `).join('');
