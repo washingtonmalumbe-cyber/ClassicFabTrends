@@ -3,28 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClassicFabTrends - Master Login</title>
+  <title>BetterLife Zambia Limited - Portal Login</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
     }
-    .login-card {
+    .brand-card {
       background: #ffffff;
       padding: 2.5rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      width: 340px;
     }
-    .login-card h2 {
-      margin-bottom: 1.5rem;
+    .brand-card h1 {
+      font-size: 1.4rem;
+      color: #0284c7;
       text-align: center;
-      color: #333333;
+      margin-bottom: 0.2rem;
+      font-weight: 800;
+    }
+    .brand-card p {
+      font-size: 0.85rem;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 1.8rem;
     }
     .form-group {
       margin-bottom: 1.2rem;
@@ -32,53 +40,56 @@
     .form-group label {
       display: block;
       margin-bottom: 0.4rem;
-      color: #555555;
+      color: #334155;
       font-size: 0.9rem;
+      font-weight: 600;
     }
     .form-group input {
       width: 100%;
-      padding: 0.6rem;
-      border: 1px solid #cccccc;
-      border-radius: 4px;
+      padding: 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
       box-sizing: border-box;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
     button {
       width: 100%;
-      padding: 0.75rem;
-      background-color: #0070f3;
+      padding: 0.8rem;
+      background-color: #0284c7;
       color: #ffffff;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 1rem;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
+      transition: background 0.2s;
     }
     button:hover {
-      background-color: #0059c1;
+      background-color: #0369a1;
     }
     #message {
-      margin-top: 1rem;
+      margin-top: 1.2rem;
       text-align: center;
       font-size: 0.9rem;
-      font-weight: bold;
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <div class="login-card">
-    <h2>Account Login</h2>
+  <div class="brand-card">
+    <h1>BetterLife Zambia</h1>
+    <p>Financial Solutions & Services Portal</p>
     <form id="loginForm">
       <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Enter username" required>
+        <label for="username">NRC / Phone / Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter credential" required>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="Enter password" required>
       </div>
-      <button type="submit">Log In</button>
+      <button type="submit">Access Account</button>
     </form>
     <div id="message"></div>
   </div>
@@ -91,39 +102,34 @@
       const passwordInput = document.getElementById('password').value.trim();
       const messageDiv = document.getElementById('message');
 
-      messageDiv.textContent = 'Authenticating...';
-      messageDiv.style.color = '#333333';
+      messageDiv.textContent = 'Verifying BetterLife Credentials...';
+      messageDiv.style.color = '#0284c7';
 
       try {
         const response = await fetch('/api/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: usernameInput,
-            password: passwordInput
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: usernameInput, password: passwordInput })
         });
 
         const data = await response.json();
 
         if (response.ok && data.success) {
-          messageDiv.style.color = 'green';
-          messageDiv.textContent = 'Login successful! Redirecting...';
+          messageDiv.style.color = '#16a34a';
+          messageDiv.textContent = 'Login Authorized! Opening Portal...';
           
-          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('betterlife_user', JSON.stringify(data.user));
 
           setTimeout(() => {
             window.location.href = '/index.html';
           }, 1000);
         } else {
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = data.error || 'Invalid credentials.';
+          messageDiv.style.color = '#dc2626';
+          messageDiv.textContent = data.error || 'Access Denied.';
         }
       } catch (err) {
-        messageDiv.style.color = 'red';
-        messageDiv.textContent = 'Network error. Please try again.';
+        messageDiv.style.color = '#dc2626';
+        messageDiv.textContent = 'Connection error. Check network and try again.';
       }
     });
   </script>

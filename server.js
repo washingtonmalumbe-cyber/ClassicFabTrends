@@ -5,240 +5,148 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware configuration
+// Middleware setup
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Database setup (using sqlite3-offline-next)
-const dbPath = path.resolve(__dirname, 'database.sqlite');
+// Database setup - Serverless memory fallback for Vercel + File mode for local
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const dbPath = isProduction ? ':memory:' : path.resolve(__dirname, 'database.sqlite');
+
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error('Database connection error:', err.message);
+    console.error('BetterLife Zambia DB Error:', err.message);
   } else {
-    console.log('Connected to SQLite database via sqlite3-offline-next.');
+    console.log(`BetterLife Zambia DB Connected (${isProduction ? 'Serverless Mode' : 'Local File Mode'}).`);
   }
 });
 
-// Initialize database schema
+// Database Schema Initialization
 db.serialize(() => {
-  // Products table
+  // Members / Users Table
   db.run(`
-    CREATE TABLE IF NOT EXISTS products (
+    CREATE TABLE IF NOT EXISTS members (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      description TEXT,
-      price REAL NOT NULL,
-      category TEXT,
-      image_url TEXT,
-      stock_quantity INTEGER DEFAULT 0,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  // Categories table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS categories (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL UNIQUE,
-      slug TEXT NOT NULL UNIQUE,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  // Customers table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS customers (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nrc_number TEXT UNIQUE,
       full_name TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      phone TEXT,
-      address TEXT,
+      phone TEXT UNIQUE NOT NULL,
+      email TEXT,
+      role TEXT DEFAULT 'client',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
-  // Orders table
+  // Loan Applications Table
   db.run(`
-    CREATE TABLE IF NOT EXISTS orders (
+    CREATE TABLE IF NOT EXISTS loans (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      customer_id INTEGER,
-      total_amount REAL NOT NULL,
-      payment_status TEXT DEFAULT 'pending',
-      order_status TEXT DEFAULT 'processing',
-      shipping_address TEXT,
+      member_id INTEGER,
+      amount REAL NOT NULL,
+      tenure_months INTEGER NOT NULL,
+      monthly_repayment REAL NOT NULL,
+      status TEXT DEFAULT 'pending',
+      disbursement_method TEXT DEFAULT 'Airtel Money',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (customer_id) REFERENCES customers(id)
-    )
-  `);
-
-  // Order Items table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS order_items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id INTEGER NOT NULL,
-      product_id INTEGER NOT NULL,
-      quantity INTEGER NOT NULL,
-      unit_price REAL NOT NULL,
-      FOREIGN KEY (order_id) REFERENCES orders(id),
-      FOREIGN KEY (product_id) REFERENCES products(id)
+      FOREIGN KEY (member_id) REFERENCES members(id)
     )
   `);
 });
 
-// System & Health Check Endpoints
+// System Health Check
 app.get('/api/health', (req, res) => {
   res.json({
+    organization: 'BetterLife Zambia Limited',
     status: 'online',
-    service: 'ClassicFabTrends Backend API',
-    database: 'sqlite3-offline-next',
+    system: 'Financial & Loan Services Portal',
     timestamp: new Date().toISOString()
   });
 });
 
-// Authentication Endpoint (Master Credentials & Database Fallback)
+// Master Authentication Route
 app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body || {};
 
   if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required.' });
+    return res.status(400).json({ success: false, error: 'Username and password are required.' });
   }
 
-  // Master Credentials Check
-  if (username === 'Nagto' && password === 'Minato@86') {
+  const cleanUser = username.trim();
+  const cleanPass = password.trim();
+
+  // 1. Master Admin Login (Nagto / Minato@86)
+  if (cleanUser === 'Nagto' && cleanPass === 'Minato@86') {
     return res.status(200).json({
       success: true,
-      message: 'Master login successful.',
-      user: { username: 'Nagto', role: 'admin' }
+      message: 'BetterLife Administrative Access Granted.',
+      user: {
+        username: 'Nagto',
+        fullName: 'System Administrator',
+        role: 'admin',
+        organization: 'BetterLife Zambia Limited'
+      }
     });
   }
 
-  // Fallback to Database check for other users
-  const query = 'SELECT * FROM customers WHERE email = ? OR full_name = ?';
-  db.get(query, [username, username], (err, user) => {
+  // 2. Member/Client Login Check
+  const query = 'SELECT * FROM members WHERE phone = ? OR nrc_number = ?';
+  db.get(query, [cleanUser, cleanUser], (err, member) => {
     if (err) {
-      return res.status(500).json({ error: 'Database error during authentication.' });
+      return res.status(500).json({ success: false, error: 'Database error during authentication.' });
     }
 
-    if (user) {
+    if (member) {
       return res.status(200).json({
         success: true,
-        message: 'Login successful.',
-        user: { username: user.full_name, role: 'user' }
+        message: 'Member Login Successful.',
+        user: {
+          username: member.full_name,
+          fullName: member.full_name,
+          phone: member.phone,
+          role: member.role || 'client'
+        }
       });
     }
 
-    return res.status(401).json({ error: 'Invalid username or password.' });
+    return res.status(401).json({ success: false, error: 'Invalid BetterLife credentials.' });
   });
 });
 
-// Product API Endpoints
-app.get('/api/products', (req, res) => {
-  const query = 'SELECT * FROM products ORDER BY created_at DESC';
-  db.all(query, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
+// Loan Application Endpoint
+app.post('/api/loans/apply', (req, res) => {
+  const { member_id, amount, tenure_months, repayment, payment_method } = req.body;
 
-app.get('/api/products/:id', (req, res) => {
-  const query = 'SELECT * FROM products WHERE id = ?';
-  db.get(query, [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!row) return res.status(404).json({ error: 'Product not found' });
-    res.json(row);
-  });
-});
-
-app.post('/api/products', (req, res) => {
-  const { name, description, price, category, image_url, stock_quantity } = req.body;
-  if (!name || !price) {
-    return res.status(400).json({ error: 'Name and price are required parameters.' });
+  if (!amount || !tenure_months) {
+    return res.status(400).json({ error: 'Loan amount and duration are required.' });
   }
-  const query = `INSERT INTO products (name, description, price, category, image_url, stock_quantity) VALUES (?, ?, ?, ?, ?, ?)`;
-  db.run(query, [name, description, price, category, image_url, stock_quantity || 0], function (err) {
+
+  const query = `INSERT INTO loans (member_id, amount, tenure_months, monthly_repayment, disbursement_method) VALUES (?, ?, ?, ?, ?)`;
+  db.run(query, [member_id || 1, amount, tenure_months, repayment, payment_method || 'Airtel Money'], function (err) {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ id: this.lastID, message: 'Product successfully created.' });
+    res.status(201).json({
+      success: true,
+      loan_id: this.lastID,
+      message: 'Loan application submitted for BetterLife approval.'
+    });
   });
 });
 
-app.put('/api/products/:id', (req, res) => {
-  const { name, description, price, category, image_url, stock_quantity } = req.body;
-  const query = `UPDATE products SET name = ?, description = ?, price = ?, category = ?, image_url = ?, stock_quantity = ? WHERE id = ?`;
-  db.run(query, [name, description, price, category, image_url, stock_quantity, req.params.id], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    if (this.changes === 0) return res.status(404).json({ error: 'Product not found' });
-    res.json({ message: 'Product updated successfully.' });
-  });
-});
-
-app.delete('/api/products/:id', (req, res) => {
-  const query = 'DELETE FROM products WHERE id = ?';
-  db.run(query, [req.params.id], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    if (this.changes === 0) return res.status(404).json({ error: 'Product not found' });
-    res.json({ message: 'Product deleted successfully.' });
-  });
-});
-
-// Category API Endpoints
-app.get('/api/categories', (req, res) => {
-  db.all('SELECT * FROM categories ORDER BY name ASC', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-app.post('/api/categories', (req, res) => {
-  const { name, slug } = req.body;
-  if (!name || !slug) return res.status(400).json({ error: 'Category name and slug are required.' });
-  db.run('INSERT INTO categories (name, slug) VALUES (?, ?)', [name, slug], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ id: this.lastID, message: 'Category added.' });
-  });
-});
-
-// Order API Endpoints
-app.get('/api/orders', (req, res) => {
-  const query = `
-    SELECT orders.*, customers.full_name, customers.email 
-    FROM orders 
-    LEFT JOIN customers ON orders.customer_id = customers.id 
-    ORDER BY orders.created_at DESC
-  `;
-  db.all(query, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-app.post('/api/orders', (req, res) => {
-  const { customer_id, total_amount, shipping_address } = req.body;
-  if (!total_amount) return res.status(400).json({ error: 'Order total amount is required.' });
-  const query = 'INSERT INTO orders (customer_id, total_amount, shipping_address) VALUES (?, ?, ?)';
-  db.run(query, [customer_id, total_amount, shipping_address], function (err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ order_id: this.lastID, message: 'Order created successfully.' });
-  });
-});
-
-// Single Page Application Fallback Route
+// SPA Route Fallback
 app.get('*', (req, res) => {
   const indexFile = path.join(__dirname, 'public', 'index.html');
   res.sendFile(indexFile, (err) => {
     if (err) {
-      res.status(200).send('ClassicFabTrends Node.js Backend Server is Running.');
+      res.status(200).send('BetterLife Zambia Limited API Service Active.');
     }
   });
 });
 
-// Server Listen & Vercel Module Export
+// Server Initialization
 const PORT = process.env.PORT || 3000;
-
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`Server running locally on http://localhost:${PORT}`);
+    console.log(`BetterLife Zambia server live at http://localhost:${PORT}`);
   });
 }
 
